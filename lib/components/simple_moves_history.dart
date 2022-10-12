@@ -32,6 +32,7 @@ class SimpleMovesHistory extends StatelessWidget {
                           currentSan,
                           style: TextStyle(
                             fontSize: fontSize,
+                            fontFamily: 'Free Serif',
                           ),
                         ),
                       )

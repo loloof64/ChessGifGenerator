@@ -4,6 +4,7 @@ import 'package:simple_chess_board/simple_chess_board.dart';
 import 'package:chess/chess.dart' as chess;
 
 import '../components/simple_moves_history.dart';
+import '../logic/utils.dart';
 
 class GifEditionScreen extends StatefulWidget {
   const GifEditionScreen({super.key});
@@ -13,251 +14,52 @@ class GifEditionScreen extends StatefulWidget {
 }
 
 class _GifEditionScreenState extends State<GifEditionScreen> {
+  bool _gameStart = true;
+  List<String> _movesSans = [];
   chess.Chess _gameLogic = chess.Chess();
-  List<String> _movesSans = [
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-    'e4',
-    'e5',
-    'Cf3',
-    'Cc6',
-    'd4',
-    'd5',
-  ];
 
-  void _checkMove({required ShortMove move}) {}
+  @override
+  void initState() {
+    final moveNumberCaption = "${_gameLogic.fen.split(' ')[5]}.";
+    _movesSans.add(moveNumberCaption);
+    super.initState();
+  }
+
+  void _checkMove({required ShortMove move}) {
+    final moveHasBeenMade = _gameLogic.move({
+      'from': move.from,
+      'to': move.to,
+      'promotion': move.promotion.map((t) => t.name).toNullable(),
+    });
+    if (moveHasBeenMade) {
+      final whiteMove = _gameLogic.turn == chess.Color.WHITE;
+      final lastPlayedMove = _gameLogic.history.last.move;
+
+      /*
+      We need to know if it was white move before the move which
+      we want to add history node(s).
+      */
+      if (!whiteMove && !_gameStart) {
+        final moveNumberCaption = "${_gameLogic.fen.split(' ')[5]}.";
+        setState(() {
+          _movesSans.add(moveNumberCaption);
+        });
+      }
+
+      // In order to get move SAN, it must not be done on board yet !
+      // So we rollback the move, then we'll make it happen again.
+      _gameLogic.undo_move();
+      final san = _gameLogic.move_to_san(lastPlayedMove);
+      _gameLogic.make_move(lastPlayedMove);
+
+      final fan = san.toFan(whiteMove: !whiteMove);
+
+      setState(() {
+        _movesSans.add(fan);
+        _gameStart = false;
+      });
+    }
+  }
 
   Future<PieceType?> _checkPromotion() {
     return Future.value(PieceType.queen);
