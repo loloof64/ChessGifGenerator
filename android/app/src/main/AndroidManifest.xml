@@ -2,7 +2,7 @@
     package="com.loloof64.chess_animated_gif_creator">
    <application
         android:label="chess_animated_gif_creator"
-        android:name="${applicationName}"
+        android:name="@string/app_name"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
