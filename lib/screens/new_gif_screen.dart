@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class NewGifScreen extends StatelessWidget {
   const NewGifScreen({super.key});
@@ -11,7 +12,9 @@ class NewGifScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New gif'),
+        title: Text(
+          AppLocalizations.of(context)!.pages_new_gif_title,
+        ),
       ),
       body: Center(
         child: Column(
@@ -20,14 +23,20 @@ class NewGifScreen extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: _letUserEditGif,
-              child: const Text('Enter the moves on chess board'),
+              child: Text(
+                AppLocalizations.of(context)!
+                    .pages_new_gif_buttons_manual_creation,
+              ),
             ),
             const SizedBox(
               height: 8,
             ),
             ElevatedButton(
               onPressed: _letUserChoosePgn,
-              child: const Text('Create from PGN file'),
+              child: Text(
+                AppLocalizations.of(context)!
+                    .pages_new_gif_buttons_creation_from_pgn,
+              ),
             )
           ],
         ),
