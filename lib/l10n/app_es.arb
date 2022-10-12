@@ -1,5 +1,7 @@
 {
     "pages_new_gif_title": "Nuevo GIF",
     "pages_new_gif_buttons_manual_creation": "Edición manual",
-    "pages_new_gif_buttons_creation_from_pgn": "Desde archivo PGN"
+    "pages_new_gif_buttons_creation_from_pgn": "Desde archivo PGN",
+
+    "pages_gif_edition_title": "Creación de GIF"
 }

@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class NewGifScreen extends StatelessWidget {
+class NewGifScreen extends StatefulWidget {
   const NewGifScreen({super.key});
 
-  void _letUserEditGif() {}
+  @override
+  State<NewGifScreen> createState() => _NewGifScreenState();
+}
 
-  void _letUserChoosePgn() {}
+class _NewGifScreenState extends State<NewGifScreen> {
+  Future<void> _letUserEditGif() async {
+    await Navigator.of(context).pushNamed("/edition");
+  }
+
+  Future<void> _letUserChoosePgn() async {
+    await Navigator.of(context).pushNamed("/edition");
+  }
 
   @override
   Widget build(BuildContext context) {
