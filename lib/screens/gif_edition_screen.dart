@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:simple_chess_board/models/board_arrow.dart';
 import 'package:simple_chess_board/simple_chess_board.dart';
 import 'package:chess/chess.dart' as chess;
 
@@ -15,8 +16,9 @@ class GifEditionScreen extends StatefulWidget {
 
 class _GifEditionScreenState extends State<GifEditionScreen> {
   bool _gameStart = true;
-  List<String> _movesSans = [];
-  chess.Chess _gameLogic = chess.Chess();
+  final List<String> _movesSans = [];
+  final chess.Chess _gameLogic = chess.Chess();
+  BoardArrow? _lastMoveToHighlight = null;
 
   @override
   void initState() {
@@ -56,6 +58,11 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
 
       setState(() {
         _movesSans.add(fan);
+        _lastMoveToHighlight = BoardArrow(
+          from: move.from,
+          to: move.to,
+          color: Colors.blueAccent,
+        );
         _gameStart = false;
       });
     }
@@ -80,12 +87,14 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
             ? PortraitContent(
                 positionFen: _gameLogic.fen,
                 movesSans: _movesSans,
+                lastMoveToHighlight: _lastMoveToHighlight,
                 onMove: _checkMove,
                 onPromotion: _checkPromotion,
               )
             : LandscapeContent(
                 positionFen: _gameLogic.fen,
                 movesSans: _movesSans,
+                lastMoveToHighlight: _lastMoveToHighlight,
                 onMove: _checkMove,
                 onPromotion: _checkPromotion,
               ),
@@ -97,6 +106,7 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
 class PortraitContent extends StatelessWidget {
   final String positionFen;
   final List<String> movesSans;
+  final BoardArrow? lastMoveToHighlight;
 
   final void Function({required ShortMove move}) onMove;
   final Future<PieceType?> Function() onPromotion;
@@ -105,6 +115,7 @@ class PortraitContent extends StatelessWidget {
     super.key,
     required this.positionFen,
     required this.movesSans,
+    required this.lastMoveToHighlight,
     required this.onMove,
     required this.onPromotion,
   });
@@ -128,7 +139,7 @@ class PortraitContent extends StatelessWidget {
             onPromote: onPromotion,
             orientation: BoardColor.white,
             engineThinking: false,
-            lastMoveToHighlight: null,
+            lastMoveToHighlight: lastMoveToHighlight,
             showCoordinatesZone: true,
           ),
           SizedBox(
@@ -147,6 +158,7 @@ class PortraitContent extends StatelessWidget {
 class LandscapeContent extends StatelessWidget {
   final String positionFen;
   final List<String> movesSans;
+  final BoardArrow? lastMoveToHighlight;
 
   final void Function({required ShortMove move}) onMove;
   final Future<PieceType?> Function() onPromotion;
@@ -155,6 +167,7 @@ class LandscapeContent extends StatelessWidget {
     super.key,
     required this.positionFen,
     required this.movesSans,
+    required this.lastMoveToHighlight,
     required this.onMove,
     required this.onPromotion,
   });
@@ -179,7 +192,7 @@ class LandscapeContent extends StatelessWidget {
             onPromote: onPromotion,
             orientation: BoardColor.white,
             engineThinking: false,
-            lastMoveToHighlight: null,
+            lastMoveToHighlight: lastMoveToHighlight,
             showCoordinatesZone: true,
           ),
           SizedBox(
