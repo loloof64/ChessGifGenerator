@@ -18,7 +18,7 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
   bool _gameStart = true;
   final List<String> _movesSans = [];
   final chess.Chess _gameLogic = chess.Chess();
-  BoardArrow? _lastMoveToHighlight = null;
+  BoardArrow? _lastMoveToHighlight;
 
   @override
   void initState() {

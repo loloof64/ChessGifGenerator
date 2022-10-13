@@ -237,7 +237,7 @@ packages:
       name: simple_chess_board
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.8"
+    version: "0.5.0"
   sky_engine:
     dependency: transitive
     description: flutter
