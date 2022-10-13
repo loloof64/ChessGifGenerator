@@ -127,20 +127,25 @@ class PortraitContent extends StatelessWidget {
           ? constraints.maxWidth
           : constraints.maxHeight;
       final fontSize = minSize * 0.05;
+      final boardSize = minSize * 0.90;
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SimpleChessBoard(
-            whitePlayerType: PlayerType.human,
-            blackPlayerType: PlayerType.human,
-            fen: positionFen,
-            onMove: onMove,
-            onPromote: onPromotion,
-            orientation: BoardColor.white,
-            engineThinking: false,
-            lastMoveToHighlight: lastMoveToHighlight,
-            showCoordinatesZone: true,
+          SizedBox(
+            width: boardSize,
+            height: boardSize,
+            child: SimpleChessBoard(
+              whitePlayerType: PlayerType.human,
+              blackPlayerType: PlayerType.human,
+              fen: positionFen,
+              onMove: onMove,
+              onPromote: onPromotion,
+              orientation: BoardColor.white,
+              engineThinking: false,
+              lastMoveToHighlight: lastMoveToHighlight,
+              showCoordinatesZone: true,
+            ),
           ),
           SizedBox(
             height: fontSize * 0.4,
