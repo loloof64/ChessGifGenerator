@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:simple_chess_board/models/board_arrow.dart';
 import 'package:simple_chess_board/simple_chess_board.dart';
+import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:chess/chess.dart' as chess;
 
 import '../components/simple_moves_history.dart';
@@ -69,8 +70,68 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
   }
 
   Future<PieceType?> _checkPromotion() {
-    //TODO implement promotion logic
-    return Future.value(PieceType.queen);
+    final whiteTurn = _gameLogic.fen.split(' ')[1] == 'w';
+    const piecesSize = 60.0;
+    return showDialog<PieceType>(
+        context: context,
+        builder: (ctx2) {
+          return AlertDialog(
+            alignment: Alignment.center,
+            content: FittedBox(
+                child: Row(
+              children: [
+                InkWell(
+                  child: whiteTurn
+                      ? WhiteQueen(
+                          size: piecesSize,
+                        )
+                      : BlackQueen(
+                          size: piecesSize,
+                        ),
+                  onTap: () {
+                    Navigator.of(context).pop(PieceType.queen);
+                  },
+                ),
+                InkWell(
+                  child: whiteTurn
+                      ? WhiteRook(
+                          size: piecesSize,
+                        )
+                      : BlackRook(
+                          size: piecesSize,
+                        ),
+                  onTap: () {
+                    Navigator.of(context).pop(PieceType.rook);
+                  },
+                ),
+                InkWell(
+                  child: whiteTurn
+                      ? WhiteBishop(
+                          size: piecesSize,
+                        )
+                      : BlackBishop(
+                          size: piecesSize,
+                        ),
+                  onTap: () {
+                    Navigator.of(context).pop(PieceType.bishop);
+                  },
+                ),
+                InkWell(
+                  child: whiteTurn
+                      ? WhiteKnight(
+                          size: piecesSize,
+                        )
+                      : BlackKnight(
+                          size: piecesSize,
+                        ),
+                  onTap: () {
+                    Navigator.of(context).pop(PieceType.knight);
+                  },
+                ),
+              ],
+            )),
+          );
+        });
   }
 
   void _onGenerateGif() {}

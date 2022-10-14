@@ -39,6 +39,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: ^0.17.0
+  chess_vectors_flutter: ^1.0.18
 
 
   # The following adds the Cupertino Icons font to your application.
