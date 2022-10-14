@@ -69,13 +69,15 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
   }
 
   Future<PieceType?> _checkPromotion() {
+    //TODO implement promotion logic
     return Future.value(PieceType.queen);
   }
 
+  void _onGenerateGif() {}
+
   @override
   Widget build(BuildContext context) {
-    final isPortrait =
-        MediaQuery.of(context).orientation == Orientation.portrait;
+    final isPortrait = MediaQuery.of(context).size.width < 800;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -90,6 +92,7 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
                 lastMoveToHighlight: _lastMoveToHighlight,
                 onMove: _checkMove,
                 onPromotion: _checkPromotion,
+                onGenerateGif: _onGenerateGif,
               )
             : LandscapeContent(
                 positionFen: _gameLogic.fen,
@@ -97,6 +100,7 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
                 lastMoveToHighlight: _lastMoveToHighlight,
                 onMove: _checkMove,
                 onPromotion: _checkPromotion,
+                onGenerateGif: _onGenerateGif,
               ),
       ),
     );
@@ -110,6 +114,7 @@ class PortraitContent extends StatelessWidget {
 
   final void Function({required ShortMove move}) onMove;
   final Future<PieceType?> Function() onPromotion;
+  final void Function() onGenerateGif;
 
   const PortraitContent({
     super.key,
@@ -118,6 +123,7 @@ class PortraitContent extends StatelessWidget {
     required this.lastMoveToHighlight,
     required this.onMove,
     required this.onPromotion,
+    required this.onGenerateGif,
   });
 
   @override
@@ -127,7 +133,12 @@ class PortraitContent extends StatelessWidget {
           ? constraints.maxWidth
           : constraints.maxHeight;
       final fontSize = minSize * 0.05;
-      final boardSize = minSize * 0.90;
+      final boardSize = minSize * 0.80;
+      final gapSize = fontSize * 0.4;
+      const buttonHeight = 30;
+      final historyAvailableWidth = constraints.maxWidth;
+      final historyAvailableHeight =
+          constraints.maxHeight - boardSize - gapSize * 2 - buttonHeight;
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -148,11 +159,22 @@ class PortraitContent extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: fontSize * 0.4,
+            height: gapSize,
           ),
           SimpleMovesHistory(
             movesSans: movesSans,
             fontSize: fontSize,
+            width: historyAvailableWidth,
+            height: historyAvailableHeight,
+          ),
+          SizedBox(
+            height: gapSize,
+          ),
+          ElevatedButton(
+            onPressed: onGenerateGif,
+            child: Text(
+              AppLocalizations.of(context)!.pages_gif_edition_generate_button,
+            ),
           ),
         ],
       );
@@ -167,6 +189,7 @@ class LandscapeContent extends StatelessWidget {
 
   final void Function({required ShortMove move}) onMove;
   final Future<PieceType?> Function() onPromotion;
+  final void Function() onGenerateGif;
 
   const LandscapeContent({
     super.key,
@@ -175,6 +198,7 @@ class LandscapeContent extends StatelessWidget {
     required this.lastMoveToHighlight,
     required this.onMove,
     required this.onPromotion,
+    required this.onGenerateGif,
   });
 
   @override
@@ -184,28 +208,58 @@ class LandscapeContent extends StatelessWidget {
           ? constraints.maxWidth
           : constraints.maxHeight;
       final fontSize = minSize * 0.05;
+      final boardSize = minSize * 1.0;
+      final gapSize = fontSize * 0.4;
+      const buttonSize = 10;
+      final historyAvailableWidth = constraints.maxWidth - gapSize - boardSize;
+      final historyAvailableHeight =
+          constraints.maxHeight - gapSize - buttonSize;
 
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          SimpleChessBoard(
-            whitePlayerType: PlayerType.human,
-            blackPlayerType: PlayerType.human,
-            fen: positionFen,
-            onMove: onMove,
-            onPromote: onPromotion,
-            orientation: BoardColor.white,
-            engineThinking: false,
-            lastMoveToHighlight: lastMoveToHighlight,
-            showCoordinatesZone: true,
+          SizedBox(
+            width: boardSize,
+            height: boardSize,
+            child: SimpleChessBoard(
+              whitePlayerType: PlayerType.human,
+              blackPlayerType: PlayerType.human,
+              fen: positionFen,
+              onMove: onMove,
+              onPromote: onPromotion,
+              orientation: BoardColor.white,
+              engineThinking: false,
+              lastMoveToHighlight: lastMoveToHighlight,
+              showCoordinatesZone: true,
+            ),
           ),
           SizedBox(
-            width: fontSize * 0.4,
+            width: gapSize,
           ),
-          SimpleMovesHistory(
-            movesSans: movesSans,
-            fontSize: fontSize,
+          Column(
+            children: [
+              SizedBox(
+                height: constraints.maxHeight * 0.8,
+                child: SimpleMovesHistory(
+                  width: historyAvailableWidth,
+                  height: historyAvailableHeight,
+                  movesSans: movesSans,
+                  fontSize: fontSize,
+                ),
+              ),
+              SizedBox(
+                height: gapSize,
+              ),
+              ElevatedButton(
+                onPressed: onGenerateGif,
+                child: Text(
+                  AppLocalizations.of(context)!
+                      .pages_gif_edition_generate_button,
+                ),
+              ),
+            ],
           ),
         ],
       );
