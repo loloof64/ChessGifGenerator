@@ -158,20 +158,41 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
     await screenshotController.captureAndSave(screenshotsDir.path,
         fileName: '${baseFilename}_0.png');
 
-    movesSans.asMap().forEach((index, moveSan) async {
-      final fileName = '${baseFilename}_${index + 1}.png';
-      setState(() {
-        _gameLogic.move(moveSan);
-        final lastMove = _gameLogic.getHistory({'verbose': true}).last;
-        _lastMoveToHighlight = BoardArrow(
-            from: lastMove['from'],
-            to: lastMove['to'],
-            color: Colors.blueAccent);
-      });
-      await Future.delayed(const Duration(milliseconds: 100));
+    Future.delayed(const Duration(milliseconds: 100), () {
+      _takeGameStepScreenshot(
+        stepIndex: 0,
+        tempStorageDirPath: screenshotsDir.path,
+        baseFilename: baseFilename,
+        movesSans: movesSans,
+      );
+    });
+  }
+
+  void _takeGameStepScreenshot({
+    required int stepIndex,
+    required String tempStorageDirPath,
+    required String baseFilename,
+    required List<dynamic> movesSans,
+  }) {
+    if (stepIndex >= movesSans.length) return;
+    final fileName = '${baseFilename}_${stepIndex + 1}.png';
+    final currentMoveSan = movesSans[stepIndex];
+    setState(() {
+      _gameLogic.move(currentMoveSan);
+      final lastMove = _gameLogic.getHistory({'verbose': true}).last;
+      _lastMoveToHighlight = BoardArrow(
+          from: lastMove['from'], to: lastMove['to'], color: Colors.blueAccent);
+    });
+    Future.delayed(const Duration(milliseconds: 100), () async {
       await screenshotController.captureAndSave(
-        screenshotsDir.path,
+        tempStorageDirPath,
         fileName: fileName,
+      );
+      _takeGameStepScreenshot(
+        stepIndex: stepIndex + 1,
+        tempStorageDirPath: tempStorageDirPath,
+        baseFilename: baseFilename,
+        movesSans: movesSans,
       );
     });
   }
