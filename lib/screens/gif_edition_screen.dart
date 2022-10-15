@@ -1,8 +1,13 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:simple_chess_board/models/board_arrow.dart';
 import 'package:simple_chess_board/simple_chess_board.dart';
 import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
 import 'package:chess/chess.dart' as chess;
 
 import '../components/simple_moves_history.dart';
@@ -18,8 +23,11 @@ class GifEditionScreen extends StatefulWidget {
 class _GifEditionScreenState extends State<GifEditionScreen> {
   bool _gameStart = true;
   final List<String> _movesSans = [];
-  final chess.Chess _gameLogic = chess.Chess();
+  chess.Chess _gameLogic = chess.Chess();
   BoardArrow? _lastMoveToHighlight;
+  PlayerType _whitePlayerType = PlayerType.human;
+  PlayerType _blackPlayerType = PlayerType.human;
+  ScreenshotController screenshotController = ScreenshotController();
 
   @override
   void initState() {
@@ -134,7 +142,39 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
         });
   }
 
-  void _onGenerateGif() {}
+  void _onGenerateGif() async {
+    final movesSans = _gameLogic.getHistory();
+    final baseFilename = '${DateTime.now().millisecondsSinceEpoch}';
+    setState(() {
+      _gameLogic = chess.Chess();
+      _lastMoveToHighlight = null;
+      _whitePlayerType = PlayerType.computer;
+      _blackPlayerType = PlayerType.computer;
+    });
+    Directory tempDir = await getTemporaryDirectory();
+    Directory screenshotsDir =
+        Directory('${tempDir.path}${Platform.pathSeparator}chess_screenshots');
+    await screenshotsDir.create();
+    await screenshotController.captureAndSave(screenshotsDir.path,
+        fileName: '${baseFilename}_0.png');
+
+    movesSans.asMap().forEach((index, moveSan) async {
+      final fileName = '${baseFilename}_${index + 1}.png';
+      setState(() {
+        _gameLogic.move(moveSan);
+        final lastMove = _gameLogic.getHistory({'verbose': true}).last;
+        _lastMoveToHighlight = BoardArrow(
+            from: lastMove['from'],
+            to: lastMove['to'],
+            color: Colors.blueAccent);
+      });
+      await Future.delayed(const Duration(milliseconds: 100));
+      await screenshotController.captureAndSave(
+        screenshotsDir.path,
+        fileName: fileName,
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -151,6 +191,9 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
                 positionFen: _gameLogic.fen,
                 movesSans: _movesSans,
                 lastMoveToHighlight: _lastMoveToHighlight,
+                screenshotController: screenshotController,
+                whitePlayerType: _whitePlayerType,
+                blackPlayerType: _blackPlayerType,
                 onMove: _checkMove,
                 onPromotion: _checkPromotion,
                 onGenerateGif: _onGenerateGif,
@@ -159,6 +202,9 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
                 positionFen: _gameLogic.fen,
                 movesSans: _movesSans,
                 lastMoveToHighlight: _lastMoveToHighlight,
+                screenshotController: screenshotController,
+                whitePlayerType: _whitePlayerType,
+                blackPlayerType: _blackPlayerType,
                 onMove: _checkMove,
                 onPromotion: _checkPromotion,
                 onGenerateGif: _onGenerateGif,
@@ -172,6 +218,9 @@ class PortraitContent extends StatelessWidget {
   final String positionFen;
   final List<String> movesSans;
   final BoardArrow? lastMoveToHighlight;
+  final ScreenshotController screenshotController;
+  final PlayerType whitePlayerType;
+  final PlayerType blackPlayerType;
 
   final void Function({required ShortMove move}) onMove;
   final Future<PieceType?> Function() onPromotion;
@@ -182,6 +231,9 @@ class PortraitContent extends StatelessWidget {
     required this.positionFen,
     required this.movesSans,
     required this.lastMoveToHighlight,
+    required this.screenshotController,
+    required this.whitePlayerType,
+    required this.blackPlayerType,
     required this.onMove,
     required this.onPromotion,
     required this.onGenerateGif,
@@ -207,16 +259,19 @@ class PortraitContent extends StatelessWidget {
           SizedBox(
             width: boardSize,
             height: boardSize,
-            child: SimpleChessBoard(
-              whitePlayerType: PlayerType.human,
-              blackPlayerType: PlayerType.human,
-              fen: positionFen,
-              onMove: onMove,
-              onPromote: onPromotion,
-              orientation: BoardColor.white,
-              engineThinking: false,
-              lastMoveToHighlight: lastMoveToHighlight,
-              showCoordinatesZone: true,
+            child: Screenshot(
+              controller: screenshotController,
+              child: SimpleChessBoard(
+                whitePlayerType: whitePlayerType,
+                blackPlayerType: blackPlayerType,
+                fen: positionFen,
+                onMove: onMove,
+                onPromote: onPromotion,
+                orientation: BoardColor.white,
+                engineThinking: false,
+                lastMoveToHighlight: lastMoveToHighlight,
+                showCoordinatesZone: true,
+              ),
             ),
           ),
           SizedBox(
@@ -247,6 +302,9 @@ class LandscapeContent extends StatelessWidget {
   final String positionFen;
   final List<String> movesSans;
   final BoardArrow? lastMoveToHighlight;
+  final ScreenshotController screenshotController;
+  final PlayerType whitePlayerType;
+  final PlayerType blackPlayerType;
 
   final void Function({required ShortMove move}) onMove;
   final Future<PieceType?> Function() onPromotion;
@@ -257,6 +315,9 @@ class LandscapeContent extends StatelessWidget {
     required this.positionFen,
     required this.movesSans,
     required this.lastMoveToHighlight,
+    required this.screenshotController,
+    required this.whitePlayerType,
+    required this.blackPlayerType,
     required this.onMove,
     required this.onPromotion,
     required this.onGenerateGif,
@@ -284,16 +345,19 @@ class LandscapeContent extends StatelessWidget {
           SizedBox(
             width: boardSize,
             height: boardSize,
-            child: SimpleChessBoard(
-              whitePlayerType: PlayerType.human,
-              blackPlayerType: PlayerType.human,
-              fen: positionFen,
-              onMove: onMove,
-              onPromote: onPromotion,
-              orientation: BoardColor.white,
-              engineThinking: false,
-              lastMoveToHighlight: lastMoveToHighlight,
-              showCoordinatesZone: true,
+            child: Screenshot(
+              controller: screenshotController,
+              child: SimpleChessBoard(
+                whitePlayerType: whitePlayerType,
+                blackPlayerType: blackPlayerType,
+                fen: positionFen,
+                onMove: onMove,
+                onPromote: onPromotion,
+                orientation: BoardColor.white,
+                engineThinking: false,
+                lastMoveToHighlight: lastMoveToHighlight,
+                showCoordinatesZone: true,
+              ),
             ),
           ),
           SizedBox(

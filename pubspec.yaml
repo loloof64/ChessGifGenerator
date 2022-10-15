@@ -31,7 +31,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  snapshot: ^0.2.5
+  screenshot: ^1.2.3
   image: ^3.2.0
   simple_chess_board: ^0.6.2
   chess: ^0.8.0
@@ -40,6 +40,7 @@ dependencies:
     sdk: flutter
   intl: ^0.17.0
   chess_vectors_flutter: ^1.0.18
+  path_provider: ^2.0.11
 
 
   # The following adds the Cupertino Icons font to your application.
