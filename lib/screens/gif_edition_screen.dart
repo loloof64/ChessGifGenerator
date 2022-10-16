@@ -29,6 +29,7 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
   PlayerType _whitePlayerType = PlayerType.human;
   PlayerType _blackPlayerType = PlayerType.human;
   ScreenshotController screenshotController = ScreenshotController();
+  bool _isBusyGeneratingGif = false;
 
   @override
   void initState() {
@@ -147,6 +148,7 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
     final movesSans = _gameLogic.getHistory();
     final baseFilename = '${DateTime.now().millisecondsSinceEpoch}';
     setState(() {
+      _isBusyGeneratingGif = true;
       _gameLogic = chess.Chess();
       _lastMoveToHighlight = null;
       _whitePlayerType = PlayerType.computer;
@@ -235,6 +237,10 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
     final destinationFile =
         File('$tempStorageDirPath${Platform.pathSeparator}$baseFilename.gif');
     await destinationFile.writeAsBytes(gifData);
+
+    setState(() {
+      _isBusyGeneratingGif = false;
+    });
   }
 
   @override
@@ -246,30 +252,47 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
           AppLocalizations.of(context)!.pages_gif_edition_title,
         ),
       ),
-      body: Center(
-        child: isPortrait
-            ? PortraitContent(
-                positionFen: _gameLogic.fen,
-                movesSans: _movesSans,
-                lastMoveToHighlight: _lastMoveToHighlight,
-                screenshotController: screenshotController,
-                whitePlayerType: _whitePlayerType,
-                blackPlayerType: _blackPlayerType,
-                onMove: _checkMove,
-                onPromotion: _checkPromotion,
-                onGenerateGif: _onGenerateGif,
-              )
-            : LandscapeContent(
-                positionFen: _gameLogic.fen,
-                movesSans: _movesSans,
-                lastMoveToHighlight: _lastMoveToHighlight,
-                screenshotController: screenshotController,
-                whitePlayerType: _whitePlayerType,
-                blackPlayerType: _blackPlayerType,
-                onMove: _checkMove,
-                onPromotion: _checkPromotion,
-                onGenerateGif: _onGenerateGif,
-              ),
+      body: Stack(
+        children: [
+          isPortrait
+              ? PortraitContent(
+                  positionFen: _gameLogic.fen,
+                  movesSans: _movesSans,
+                  lastMoveToHighlight: _lastMoveToHighlight,
+                  screenshotController: screenshotController,
+                  whitePlayerType: _whitePlayerType,
+                  blackPlayerType: _blackPlayerType,
+                  onMove: _checkMove,
+                  onPromotion: _checkPromotion,
+                  onGenerateGif: _onGenerateGif,
+                )
+              : LandscapeContent(
+                  positionFen: _gameLogic.fen,
+                  movesSans: _movesSans,
+                  lastMoveToHighlight: _lastMoveToHighlight,
+                  screenshotController: screenshotController,
+                  whitePlayerType: _whitePlayerType,
+                  blackPlayerType: _blackPlayerType,
+                  onMove: _checkMove,
+                  onPromotion: _checkPromotion,
+                  onGenerateGif: _onGenerateGif,
+                ),
+          if (_isBusyGeneratingGif)
+            Center(
+              child: LayoutBuilder(builder: (ctx2, constraints2) {
+                final minSize = constraints2.maxWidth < constraints2.maxHeight
+                    ? constraints2.maxWidth
+                    : constraints2.maxHeight;
+                return SizedBox(
+                  width: minSize * 0.6,
+                  height: minSize * 0.6,
+                  child: const CircularProgressIndicator(
+                    color: Colors.orange,
+                  ),
+                );
+              }),
+            ),
+        ],
       ),
     );
   }
