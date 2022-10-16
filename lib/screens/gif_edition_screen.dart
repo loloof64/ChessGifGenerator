@@ -9,6 +9,7 @@ import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:chess/chess.dart' as chess;
+import 'package:image/image.dart' as image;
 
 import '../components/simple_moves_history.dart';
 import '../logic/utils.dart';
@@ -174,7 +175,14 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
     required String baseFilename,
     required List<dynamic> movesSans,
   }) {
-    if (stepIndex >= movesSans.length) return;
+    if (stepIndex >= movesSans.length) {
+      _mergeScreenshotsIntoGif(
+        gameStepsCount: movesSans.length,
+        tempStorageDirPath: tempStorageDirPath,
+        baseFilename: baseFilename,
+      );
+      return;
+    }
     final fileName = '${baseFilename}_${stepIndex + 1}.png';
     final currentMoveSan = movesSans[stepIndex];
     setState(() {
@@ -195,6 +203,30 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
         movesSans: movesSans,
       );
     });
+  }
+
+  void _mergeScreenshotsIntoGif({
+    required int gameStepsCount,
+    required String tempStorageDirPath,
+    required String baseFilename,
+  }) async {
+    final animation = image.Animation();
+    final imageDecoder = image.PngDecoder();
+    for (var stepIndex = 1; stepIndex <= gameStepsCount; stepIndex++) {
+      final currentFile = File(
+          '$tempStorageDirPath${Platform.pathSeparator}${baseFilename}_$stepIndex.png');
+      final currentImageBytes = await currentFile.readAsBytes();
+      final currentImage = imageDecoder.decodeImage(currentImageBytes)!;
+      animation.addFrame(currentImage);
+    }
+    final gifData = image.encodeGifAnimation(animation);
+    if (gifData == null) {
+      //TODO handle gif generation error
+      return;
+    }
+    final destinationFile =
+        File('$tempStorageDirPath${Platform.pathSeparator}$baseFilename.gif');
+    await destinationFile.writeAsBytes(gifData);
   }
 
   @override

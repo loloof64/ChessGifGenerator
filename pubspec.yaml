@@ -32,7 +32,7 @@ dependencies:
   flutter:
     sdk: flutter
   screenshot: ^1.2.3
-  image: ^3.2.0
+  image: ^3.2.2
   simple_chess_board: ^0.6.2
   chess: ^0.8.0
   file_picker: ^5.2.1
