@@ -212,12 +212,16 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
   }) async {
     final animation = image.Animation();
     final imageDecoder = image.PngDecoder();
-    for (var stepIndex = 1; stepIndex <= gameStepsCount; stepIndex++) {
+    for (var stepIndex = 0; stepIndex <= gameStepsCount; stepIndex++) {
       final currentFile = File(
           '$tempStorageDirPath${Platform.pathSeparator}${baseFilename}_$stepIndex.png');
       final currentImageBytes = await currentFile.readAsBytes();
       final currentImage = imageDecoder.decodeImage(currentImageBytes)!;
-      animation.addFrame(currentImage);
+      for (var frameRepetitionIndex = 0;
+          frameRepetitionIndex < 10;
+          frameRepetitionIndex++) {
+        animation.addFrame(currentImage);
+      }
     }
     final gifData = image.encodeGifAnimation(animation);
     if (gifData == null) {
