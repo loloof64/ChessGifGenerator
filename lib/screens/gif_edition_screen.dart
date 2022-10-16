@@ -225,7 +225,11 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
     }
     final gifData = image.encodeGifAnimation(animation);
     if (gifData == null) {
-      //TODO handle gif generation error
+      if (!mounted) return;
+      final snackBar = SnackBar(
+          content: Text(AppLocalizations.of(context)!
+              .pages_gif_edition_failed_generating_gif_error));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
       return;
     }
     final destinationFile =

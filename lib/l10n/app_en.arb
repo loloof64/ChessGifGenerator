@@ -4,5 +4,6 @@
     "pages_new_gif_buttons_creation_from_pgn": "From PGN file",
 
     "pages_gif_edition_title": "GIF creation",
-    "pages_gif_edition_generate_button": "Generate"
+    "pages_gif_edition_generate_button": "Generate",
+    "pages_gif_edition_failed_generating_gif_error": "Failed to generate GIF."
 }
