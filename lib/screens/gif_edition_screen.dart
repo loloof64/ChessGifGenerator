@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:isolate';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:simple_chess_board/models/board_arrow.dart';
@@ -176,13 +178,16 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
     required String tempStorageDirPath,
     required String baseFilename,
     required List<dynamic> movesSans,
-  }) {
+  }) async {
     if (stepIndex >= movesSans.length) {
-      _mergeScreenshotsIntoGif(
-        gameStepsCount: movesSans.length,
-        tempStorageDirPath: tempStorageDirPath,
-        baseFilename: baseFilename,
-      );
+      await compute(_mergeScreenshotsIntoGif, {
+        'gameStepsCount': movesSans.length,
+        'tempStorageDirPath': tempStorageDirPath,
+        'baseFilename': baseFilename,
+      });
+      setState(() {
+        _isBusyGeneratingGif = false;
+      });
       return;
     }
     final fileName = '${baseFilename}_${stepIndex + 1}.png';
@@ -204,42 +209,6 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
         baseFilename: baseFilename,
         movesSans: movesSans,
       );
-    });
-  }
-
-  void _mergeScreenshotsIntoGif({
-    required int gameStepsCount,
-    required String tempStorageDirPath,
-    required String baseFilename,
-  }) async {
-    final animation = image.Animation();
-    final imageDecoder = image.PngDecoder();
-    for (var stepIndex = 0; stepIndex <= gameStepsCount; stepIndex++) {
-      final currentFile = File(
-          '$tempStorageDirPath${Platform.pathSeparator}${baseFilename}_$stepIndex.png');
-      final currentImageBytes = await currentFile.readAsBytes();
-      final currentImage = imageDecoder.decodeImage(currentImageBytes)!;
-      for (var frameRepetitionIndex = 0;
-          frameRepetitionIndex < 10;
-          frameRepetitionIndex++) {
-        animation.addFrame(currentImage);
-      }
-    }
-    final gifData = image.encodeGifAnimation(animation);
-    if (gifData == null) {
-      if (!mounted) return;
-      final snackBar = SnackBar(
-          content: Text(AppLocalizations.of(context)!
-              .pages_gif_edition_failed_generating_gif_error));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      return;
-    }
-    final destinationFile =
-        File('$tempStorageDirPath${Platform.pathSeparator}$baseFilename.gif');
-    await destinationFile.writeAsBytes(gifData);
-
-    setState(() {
-      _isBusyGeneratingGif = false;
     });
   }
 
@@ -474,4 +443,26 @@ class LandscapeContent extends StatelessWidget {
       );
     });
   }
+}
+
+void _mergeScreenshotsIntoGif(Map<String, dynamic> parameters) async {
+  final animation = image.Animation();
+  final imageDecoder = image.PngDecoder();
+  for (var stepIndex = 0;
+      stepIndex <= parameters['gameStepsCount'];
+      stepIndex++) {
+    final currentFile = File(
+        '${parameters['tempStorageDirPath']}${Platform.pathSeparator}${parameters['baseFilename']}_$stepIndex.png');
+    final currentImageBytes = await currentFile.readAsBytes();
+    final currentImage = imageDecoder.decodeImage(currentImageBytes)!;
+    for (var frameRepetitionIndex = 0;
+        frameRepetitionIndex < 10;
+        frameRepetitionIndex++) {
+      animation.addFrame(currentImage);
+    }
+  }
+  final gifData = image.encodeGifAnimation(animation);
+  final destinationFile = File(
+      '${parameters['tempStorageDirPath']}${Platform.pathSeparator}${parameters['baseFilename']}.gif');
+  await destinationFile.writeAsBytes(gifData!);
 }
