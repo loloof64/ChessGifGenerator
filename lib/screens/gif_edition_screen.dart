@@ -32,6 +32,8 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
   PlayerType _blackPlayerType = PlayerType.human;
   ScreenshotController screenshotController = ScreenshotController();
   bool _isBusyGeneratingGif = false;
+  bool _includeArrows = true;
+  bool _includeCoordinates = true;
 
   @override
   void initState() {
@@ -239,6 +241,20 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
     });
   }
 
+  void _onIncludeArrowsChanged(bool? newValue) {
+    if (newValue == null) return;
+    setState(() {
+      _includeArrows = newValue;
+    });
+  }
+
+  void _onIncludeCoordinatesChanged(bool? newValue) {
+    if (newValue == null) return;
+    setState(() {
+      _includeCoordinates = newValue;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final isPortrait = MediaQuery.of(context).size.width < 800;
@@ -259,9 +275,13 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
                   screenshotController: screenshotController,
                   whitePlayerType: _whitePlayerType,
                   blackPlayerType: _blackPlayerType,
+                  includeArrows: _includeArrows,
+                  includeCoordinates: _includeCoordinates,
                   onMove: _checkMove,
                   onPromotion: _checkPromotion,
                   onGenerateGif: _onGenerateGif,
+                  onIncludeArrowsChanged: _onIncludeArrowsChanged,
+                  onIncludeCoordinatesChanged: _onIncludeCoordinatesChanged,
                 )
               : LandscapeContent(
                   busyGeneratingGif: _isBusyGeneratingGif,
@@ -271,9 +291,13 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
                   screenshotController: screenshotController,
                   whitePlayerType: _whitePlayerType,
                   blackPlayerType: _blackPlayerType,
+                  includeArrows: _includeArrows,
+                  includeCoordinates: _includeCoordinates,
                   onMove: _checkMove,
                   onPromotion: _checkPromotion,
                   onGenerateGif: _onGenerateGif,
+                  onIncludeArrowsChanged: _onIncludeArrowsChanged,
+                  onIncludeCoordinatesChanged: _onIncludeCoordinatesChanged,
                 ),
           if (_isBusyGeneratingGif)
             Center(
@@ -298,6 +322,8 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
 
 class PortraitContent extends StatelessWidget {
   final bool busyGeneratingGif;
+  final bool includeCoordinates;
+  final bool includeArrows;
   final String positionFen;
   final List<String> movesSans;
   final BoardArrow? lastMoveToHighlight;
@@ -308,10 +334,14 @@ class PortraitContent extends StatelessWidget {
   final void Function({required ShortMove move}) onMove;
   final Future<PieceType?> Function() onPromotion;
   final void Function() onGenerateGif;
+  final void Function(bool?) onIncludeCoordinatesChanged;
+  final void Function(bool?) onIncludeArrowsChanged;
 
   const PortraitContent({
     super.key,
     required this.busyGeneratingGif,
+    required this.includeArrows,
+    required this.includeCoordinates,
     required this.positionFen,
     required this.movesSans,
     required this.lastMoveToHighlight,
@@ -321,6 +351,8 @@ class PortraitContent extends StatelessWidget {
     required this.onMove,
     required this.onPromotion,
     required this.onGenerateGif,
+    required this.onIncludeArrowsChanged,
+    required this.onIncludeCoordinatesChanged,
   });
 
   @override
@@ -353,8 +385,8 @@ class PortraitContent extends StatelessWidget {
                 onPromote: onPromotion,
                 orientation: BoardColor.white,
                 engineThinking: false,
-                lastMoveToHighlight: lastMoveToHighlight,
-                showCoordinatesZone: true,
+                lastMoveToHighlight: includeArrows ? lastMoveToHighlight : null,
+                showCoordinatesZone: includeCoordinates,
               ),
             ),
           ),
@@ -367,6 +399,38 @@ class PortraitContent extends StatelessWidget {
             width: historyAvailableWidth,
             height: historyAvailableHeight,
           ),
+          if (!busyGeneratingGif)
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: gapSize),
+              child: Row(
+                children: [
+                  Checkbox(
+                    value: includeCoordinates,
+                    onChanged: onIncludeCoordinatesChanged,
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!
+                        .pages_gif_edition_include_coordinates,
+                  )
+                ],
+              ),
+            ),
+          if (!busyGeneratingGif)
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: gapSize),
+              child: Row(
+                children: [
+                  Checkbox(
+                    value: includeArrows,
+                    onChanged: onIncludeArrowsChanged,
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!
+                        .pages_gif_edition_include_arrows,
+                  )
+                ],
+              ),
+            ),
           SizedBox(
             height: gapSize,
           ),
@@ -385,6 +449,8 @@ class PortraitContent extends StatelessWidget {
 
 class LandscapeContent extends StatelessWidget {
   final bool busyGeneratingGif;
+  final bool includeCoordinates;
+  final bool includeArrows;
   final String positionFen;
   final List<String> movesSans;
   final BoardArrow? lastMoveToHighlight;
@@ -395,10 +461,14 @@ class LandscapeContent extends StatelessWidget {
   final void Function({required ShortMove move}) onMove;
   final Future<PieceType?> Function() onPromotion;
   final void Function() onGenerateGif;
+  final void Function(bool?) onIncludeCoordinatesChanged;
+  final void Function(bool?) onIncludeArrowsChanged;
 
   const LandscapeContent({
     super.key,
     required this.busyGeneratingGif,
+    required this.includeArrows,
+    required this.includeCoordinates,
     required this.positionFen,
     required this.movesSans,
     required this.lastMoveToHighlight,
@@ -408,6 +478,8 @@ class LandscapeContent extends StatelessWidget {
     required this.onMove,
     required this.onPromotion,
     required this.onGenerateGif,
+    required this.onIncludeArrowsChanged,
+    required this.onIncludeCoordinatesChanged,
   });
 
   @override
@@ -442,8 +514,8 @@ class LandscapeContent extends StatelessWidget {
                 onPromote: onPromotion,
                 orientation: BoardColor.white,
                 engineThinking: false,
-                lastMoveToHighlight: lastMoveToHighlight,
-                showCoordinatesZone: true,
+                lastMoveToHighlight: includeArrows ? lastMoveToHighlight : null,
+                showCoordinatesZone: includeCoordinates,
               ),
             ),
           ),
@@ -453,7 +525,7 @@ class LandscapeContent extends StatelessWidget {
           Column(
             children: [
               SizedBox(
-                height: constraints.maxHeight * 0.8,
+                height: constraints.maxHeight * 0.7,
                 child: SimpleMovesHistory(
                   width: historyAvailableWidth,
                   height: historyAvailableHeight,
@@ -461,9 +533,38 @@ class LandscapeContent extends StatelessWidget {
                   fontSize: fontSize,
                 ),
               ),
-              SizedBox(
-                height: gapSize,
-              ),
+              if (!busyGeneratingGif)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: gapSize),
+                  child: Row(
+                    children: [
+                      Checkbox(
+                        value: includeCoordinates,
+                        onChanged: onIncludeCoordinatesChanged,
+                      ),
+                      Text(
+                        AppLocalizations.of(context)!
+                            .pages_gif_edition_include_coordinates,
+                      )
+                    ],
+                  ),
+                ),
+              if (!busyGeneratingGif)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: gapSize),
+                  child: Row(
+                    children: [
+                      Checkbox(
+                        value: includeArrows,
+                        onChanged: onIncludeArrowsChanged,
+                      ),
+                      Text(
+                        AppLocalizations.of(context)!
+                            .pages_gif_edition_include_arrows,
+                      )
+                    ],
+                  ),
+                ),
               if (!busyGeneratingGif)
                 ElevatedButton(
                   onPressed: onGenerateGif,
