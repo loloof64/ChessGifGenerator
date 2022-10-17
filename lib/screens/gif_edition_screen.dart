@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:simple_chess_board/models/board_arrow.dart';
 import 'package:simple_chess_board/simple_chess_board.dart';
@@ -188,6 +188,28 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
       setState(() {
         _isBusyGeneratingGif = false;
       });
+
+      if (!mounted) return;
+      final result = await FilePicker.platform.saveFile(
+          dialogTitle:
+              AppLocalizations.of(context)!.pages_gif_edition_select_save_file);
+      if (result != null) {
+        final targetFilePath = result;
+        final originalFile = File(
+            '$tempStorageDirPath${Platform.pathSeparator}$baseFilename.gif');
+        await originalFile.copy(targetFilePath);
+      }
+
+      final tempDirectory = File(tempStorageDirPath);
+      tempDirectory.delete(recursive: true);
+
+      if (!mounted) return;
+      final doneSnackbar = SnackBar(
+        content: Text(AppLocalizations.of(context)!
+            .pages_gif_edition_success_generating_gif),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(doneSnackbar);
+
       return;
     }
     final fileName = '${baseFilename}_${stepIndex + 1}.png';

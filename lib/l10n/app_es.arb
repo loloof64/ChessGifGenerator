@@ -5,5 +5,7 @@
 
     "pages_gif_edition_title": "Creación de GIF",
     "pages_gif_edition_generate_button": "Generar",
-    "pages_gif_edition_failed_generating_gif_error": "No se pudo generar el GIF."
+    "pages_gif_edition_failed_generating_gif_error": "No se pudo generar el GIF.",
+    "pages_gif_edition_success_generating_gif": "GIF generado.",
+    "pages_gif_edition_select_save_file": "Seleccione el archivo de guardado"
 }
