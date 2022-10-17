@@ -252,6 +252,7 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
         children: [
           isPortrait
               ? PortraitContent(
+                  busyGeneratingGif: _isBusyGeneratingGif,
                   positionFen: _gameLogic.fen,
                   movesSans: _movesSans,
                   lastMoveToHighlight: _lastMoveToHighlight,
@@ -263,6 +264,7 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
                   onGenerateGif: _onGenerateGif,
                 )
               : LandscapeContent(
+                  busyGeneratingGif: _isBusyGeneratingGif,
                   positionFen: _gameLogic.fen,
                   movesSans: _movesSans,
                   lastMoveToHighlight: _lastMoveToHighlight,
@@ -295,6 +297,7 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
 }
 
 class PortraitContent extends StatelessWidget {
+  final bool busyGeneratingGif;
   final String positionFen;
   final List<String> movesSans;
   final BoardArrow? lastMoveToHighlight;
@@ -308,6 +311,7 @@ class PortraitContent extends StatelessWidget {
 
   const PortraitContent({
     super.key,
+    required this.busyGeneratingGif,
     required this.positionFen,
     required this.movesSans,
     required this.lastMoveToHighlight,
@@ -366,12 +370,13 @@ class PortraitContent extends StatelessWidget {
           SizedBox(
             height: gapSize,
           ),
-          ElevatedButton(
-            onPressed: onGenerateGif,
-            child: Text(
-              AppLocalizations.of(context)!.pages_gif_edition_generate_button,
+          if (!busyGeneratingGif)
+            ElevatedButton(
+              onPressed: onGenerateGif,
+              child: Text(
+                AppLocalizations.of(context)!.pages_gif_edition_generate_button,
+              ),
             ),
-          ),
         ],
       );
     });
@@ -379,6 +384,7 @@ class PortraitContent extends StatelessWidget {
 }
 
 class LandscapeContent extends StatelessWidget {
+  final bool busyGeneratingGif;
   final String positionFen;
   final List<String> movesSans;
   final BoardArrow? lastMoveToHighlight;
@@ -392,6 +398,7 @@ class LandscapeContent extends StatelessWidget {
 
   const LandscapeContent({
     super.key,
+    required this.busyGeneratingGif,
     required this.positionFen,
     required this.movesSans,
     required this.lastMoveToHighlight,
@@ -457,13 +464,14 @@ class LandscapeContent extends StatelessWidget {
               SizedBox(
                 height: gapSize,
               ),
-              ElevatedButton(
-                onPressed: onGenerateGif,
-                child: Text(
-                  AppLocalizations.of(context)!
-                      .pages_gif_edition_generate_button,
+              if (!busyGeneratingGif)
+                ElevatedButton(
+                  onPressed: onGenerateGif,
+                  child: Text(
+                    AppLocalizations.of(context)!
+                        .pages_gif_edition_generate_button,
+                  ),
                 ),
-              ),
             ],
           ),
         ],
