@@ -210,6 +210,11 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
       );
       ScaffoldMessenger.of(context).showSnackBar(doneSnackbar);
 
+      setState(() {
+        _whitePlayerType = PlayerType.human;
+        _blackPlayerType = PlayerType.human;
+      });
+
       return;
     }
     final fileName = '${baseFilename}_${stepIndex + 1}.png';
