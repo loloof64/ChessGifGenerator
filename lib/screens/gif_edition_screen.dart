@@ -17,7 +17,11 @@ import '../components/simple_moves_history.dart';
 import '../logic/utils.dart';
 
 class GifEditionScreen extends StatefulWidget {
-  const GifEditionScreen({super.key});
+  final dynamic game;
+  const GifEditionScreen({
+    super.key,
+    this.game,
+  });
 
   @override
   State<GifEditionScreen> createState() => _GifEditionScreenState();
@@ -37,8 +41,29 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
 
   @override
   void initState() {
-    final moveNumberCaption = "${_gameLogic.fen.split(' ')[5]}.";
-    _movesSans.add(moveNumberCaption);
+    if (widget.game != null) {
+      var gameData = widget.game['moves']['pgn'];
+      var moveIndex = 0;
+      for (var node in gameData) {
+        if (moveIndex % 2 == 0) {
+          _movesSans.add('${(moveIndex / 2 + 1).round()}.');
+        }
+        final currentData = node['halfMove'];
+        final currentSan = currentData['notation'];
+        _gameLogic.move(currentSan);
+        _movesSans.add(currentSan);
+        final lastMove = _gameLogic.history.last;
+        _lastMoveToHighlight = BoardArrow(
+          from: lastMove.move.fromAlgebraic,
+          to: lastMove.move.toAlgebraic,
+          color: Colors.blueAccent,
+        );
+        moveIndex++;
+      }
+    } else {
+      const moveNumberCaption = "1.";
+      _movesSans.add(moveNumberCaption);
+    }
     super.initState();
   }
 

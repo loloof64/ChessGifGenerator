@@ -1,5 +1,14 @@
+import 'dart:io';
+
+import 'package:chess_animated_gif_creator/utils/pgn_parser/pgn_parser.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:petitparser/petitparser.dart';
+import 'package:chess/chess.dart' as chess;
+
+import '../screens/game_selection_screen.dart';
+import '../screens/gif_edition_screen.dart';
 
 class NewGifScreen extends StatefulWidget {
   const NewGifScreen({super.key});
@@ -10,11 +19,67 @@ class NewGifScreen extends StatefulWidget {
 
 class _NewGifScreenState extends State<NewGifScreen> {
   Future<void> _letUserEditGif() async {
-    await Navigator.of(context).pushNamed("/edition");
+    await Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => const GifEditionScreen(),
+    ));
   }
 
   Future<void> _letUserChoosePgn() async {
-    await Navigator.of(context).pushNamed("/edition");
+    if (!mounted) return;
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pgn'],
+    );
+    if (result == null) return;
+
+    //TODO set loading state
+
+    final selectedFile = File(result.files.single.path!);
+
+    try {
+      final content = await selectedFile.readAsString();
+      final definition = PgnParserDefinition();
+      final parser = definition.build();
+      final parserResult = parser.parse(content);
+
+      final tempValue = parserResult.value;
+      final allGames = tempValue is List && tempValue[0] is Failure<dynamic>
+          ? tempValue.last
+          : tempValue;
+
+      if (!mounted) return;
+      final gameData = await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => GameSelectionScreen(games: allGames),
+        ),
+      );
+      final userCancellation = gameData == null;
+      if (userCancellation) {
+        // TODO remove loading state
+        // TODO show error snackbar
+        return;
+      }
+
+      final game = allGames[gameData.gameIndex];
+      final fen = (game["tags"] ?? {})["FEN"] ?? chess.Chess().fen;
+
+      final gameLogic = chess.Chess.fromFEN(fen);
+      final moves = gameLogic.generate_moves();
+      final noMoreMove = moves.isEmpty;
+
+      if (noMoreMove) {
+        if (!mounted) return;
+        throw Exception(AppLocalizations.of(context)?.no_move_in_selected_game);
+      }
+
+      if (!mounted) return;
+      await Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => GifEditionScreen(game: game),
+      ));
+    } catch (ex) {
+      // TODO remove loading state
+      // TODO show error snackbar
+    }
   }
 
   @override

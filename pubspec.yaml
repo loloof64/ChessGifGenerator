@@ -41,6 +41,7 @@ dependencies:
   intl: ^0.17.0
   chess_vectors_flutter: ^1.0.18
   path_provider: ^2.0.11
+  petitparser: ^5.0.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -74,6 +75,9 @@ flutter:
     - family: Free Serif
       fonts:
         - asset: assets/fonts/free_serif.ttf
+
+  assets:
+    - assets/images/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
