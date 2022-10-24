@@ -14,6 +14,8 @@ Download some images from [FlatIcon](https://www.flaticon.com) :
 - last_item : downloaded at https://www.flaticon.com/free-icon/right-thin-arrowheads_32738 and designed by FreePik
 - next_item : downloaded at https://www.flaticon.com/free-icon/right-triangular-arrowhead_44452 and designed by FreePik
 
+* Icon file has been downloaded from [Freepik](https://www.freepik.com) : https://www.freepik.com/free-vector/chess-game-isometric-concept_6883519.htm.
+
 ## Developers
 
 * Generating translations files : `flutter gen-l10n`

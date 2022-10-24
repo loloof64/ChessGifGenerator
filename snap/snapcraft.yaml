@@ -1,0 +1,26 @@
+name: chess-animated-gif-creator
+version: 0.1.0
+summary: Create an animated GIF from your chess game.
+description: If you wish to create an animated GIF from one of your chess game, this tool can help you. Either enter the moves or load a game from a PGN file, choose your options, and launch the process !
+
+confinement: strict
+base: core18
+grade: stable
+
+slots:
+  dbus-chess-animated-gif-creator:
+    interface: dbus
+    bus: session
+    name: com.loloof64.chess_animated_gif_creator
+    
+apps:
+  chess-animated-gif-creator:
+    command: chess_animated_gif_creator
+    extensions: [flutter-stable]
+    slots:
+      - dbus-chess-animated-gif-creator
+parts:
+  chess-animated-gif-creator:
+    source: .
+    plugin: flutter
+    flutter-target: lib/main.dart # The main entry-point file of the application
