@@ -18,6 +18,8 @@ class NewGifScreen extends StatefulWidget {
 }
 
 class _NewGifScreenState extends State<NewGifScreen> {
+  bool _isLoading = false;
+
   Future<void> _letUserEditGif() async {
     await Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => const GifEditionScreen(),
@@ -32,7 +34,9 @@ class _NewGifScreenState extends State<NewGifScreen> {
     );
     if (result == null) return;
 
-    //TODO set loading state
+    setState(() {
+      _isLoading = true;
+    });
 
     final selectedFile = File(result.files.single.path!);
 
@@ -55,8 +59,9 @@ class _NewGifScreenState extends State<NewGifScreen> {
       );
       final userCancellation = gameData == null;
       if (userCancellation) {
-        // TODO remove loading state
-        // TODO show error snackbar
+        setState(() {
+          _isLoading = false;
+        }); // TODO show error snackbar
         return;
       }
 
@@ -77,7 +82,9 @@ class _NewGifScreenState extends State<NewGifScreen> {
         builder: (context) => GifEditionScreen(game: game),
       ));
     } catch (ex) {
-      // TODO remove loading state
+      setState(() {
+        _isLoading = false;
+      });
       // TODO show error snackbar
     }
   }
@@ -90,30 +97,50 @@ class _NewGifScreenState extends State<NewGifScreen> {
           AppLocalizations.of(context)!.pages_new_gif_title,
         ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: _letUserEditGif,
-              child: Text(
-                AppLocalizations.of(context)!
-                    .pages_new_gif_buttons_manual_creation,
-              ),
+      body: Stack(
+        children: [
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: _letUserEditGif,
+                  child: Text(
+                    AppLocalizations.of(context)!
+                        .pages_new_gif_buttons_manual_creation,
+                  ),
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                ElevatedButton(
+                  onPressed: _letUserChoosePgn,
+                  child: Text(
+                    AppLocalizations.of(context)!
+                        .pages_new_gif_buttons_creation_from_pgn,
+                  ),
+                )
+              ],
             ),
-            const SizedBox(
-              height: 8,
-            ),
-            ElevatedButton(
-              onPressed: _letUserChoosePgn,
-              child: Text(
-                AppLocalizations.of(context)!
-                    .pages_new_gif_buttons_creation_from_pgn,
-              ),
-            )
-          ],
-        ),
+          ),
+          if (_isLoading)
+            LayoutBuilder(builder: (ctx2, constraints2) {
+              final minSize = constraints2.maxWidth < constraints2.maxHeight
+                  ? constraints2.maxWidth
+                  : constraints2.maxHeight;
+              return Center(
+                child: SizedBox(
+                  width: minSize * 0.6,
+                  height: minSize * 0.6,
+                  child: const CircularProgressIndicator(
+                    strokeWidth: 5.0,
+                    color: Colors.blue,
+                  ),
+                ),
+              );
+            }),
+        ],
       ),
     );
   }
