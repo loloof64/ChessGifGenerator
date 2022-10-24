@@ -8,11 +8,11 @@ Create an animated GIF from your chess game.
 
 * Adapted PGN PEG rules at https://github.com/mliebelt/pgn-parser/blob/master/src/pgn-rules.pegjs from project [pgn-parser](https://github.com/mliebelt/pgn-parser/blob/master/src/pgn-rules.pegjs), which is release under Apache License 2.0 (even if some elements - specially special kind of comments - have been removed).
 
-Download some images from [FlatIcon](https://www.flaticon.com) :
-- first_item : downloaded at https://www.flaticon.com/free-icon/arrowheads-of-thin-outline-to-the-left_32766 and designed by FreePik
-- previous_item : downloaded at https://www.flaticon.com/free-icon/black-triangular-arrowhead-pointing-to-left-direction_45050 and designed by FreePik
-- last_item : downloaded at https://www.flaticon.com/free-icon/right-thin-arrowheads_32738 and designed by FreePik
-- next_item : downloaded at https://www.flaticon.com/free-icon/right-triangular-arrowhead_44452 and designed by FreePik
+Download some images from [Lucide](https://lucide.dev) :
+- first_item : downloaded at https://lucide.dev/icon/chevron-first
+- last_item : downloaded at https://lucide.dev/icon/chevron-last
+- previous_item : downloaded at https://lucide.dev/icon/chevron-left
+- next_item : downloaded at https://lucide.dev/icon/chevron-right
 
 * Icon file has been downloaded from [Freepik](https://www.freepik.com) : https://www.freepik.com/free-vector/chess-game-isometric-concept_6883519.htm.
 
