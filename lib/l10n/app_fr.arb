@@ -2,6 +2,7 @@
     "pages_new_gif_title": "Nouveau GIF",
     "pages_new_gif_buttons_manual_creation": "Édition manuelle",
     "pages_new_gif_buttons_creation_from_pgn": "A partir fichier PGN",
+    "pages_new_gif_failed_loading_pgn": "Erreur de chargement du PGN.",
 
     "pages_gif_edition_title": "Création de GIF",
     "pages_gif_edition_generate_button": "Générer",

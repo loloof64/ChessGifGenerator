@@ -61,7 +61,7 @@ class _NewGifScreenState extends State<NewGifScreen> {
       if (userCancellation) {
         setState(() {
           _isLoading = false;
-        }); // TODO show error snackbar
+        });
         return;
       }
 
@@ -85,7 +85,13 @@ class _NewGifScreenState extends State<NewGifScreen> {
       setState(() {
         _isLoading = false;
       });
-      // TODO show error snackbar
+      if (!mounted) return;
+      final snackBar = SnackBar(
+        content: Text(
+          AppLocalizations.of(context)!.pages_new_gif_failed_loading_pgn,
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 
