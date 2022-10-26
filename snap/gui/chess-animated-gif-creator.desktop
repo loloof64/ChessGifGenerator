@@ -2,7 +2,7 @@
 Name=Chess animated GIF creator
 Comment=Create an animated GIF from your chess game.
 Exec=chess_animated_gif_creator
-Icon=${SNAP}/meta/gui/chess-animated-gif-creator.jpg
+Icon=${SNAP}/meta/gui/chess-animated-gif-creator.png
 Terminal=false
 Type=Application
 Categories=Game;
