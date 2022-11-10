@@ -387,12 +387,12 @@ class PortraitContent extends StatelessWidget {
           ? constraints.maxWidth
           : constraints.maxHeight;
       final fontSize = minSize * 0.05;
-      final boardSize = minSize * 0.80;
-      final gapSize = fontSize * 0.4;
-      const buttonHeight = 30;
+      final boardSize = minSize * 0.60;
+      final gapSize = fontSize * 0.1;
+      final controlsZone = busyGeneratingGif ? 0 : 100 + 4 * gapSize;
       final historyAvailableWidth = constraints.maxWidth;
       final historyAvailableHeight =
-          constraints.maxHeight - boardSize - gapSize * 2 - buttonHeight;
+          constraints.maxHeight - boardSize - gapSize * 2 - controlsZone;
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -418,11 +418,15 @@ class PortraitContent extends StatelessWidget {
           SizedBox(
             height: gapSize,
           ),
-          SimpleMovesHistory(
-            movesSans: movesSans,
-            fontSize: fontSize,
-            width: historyAvailableWidth,
-            height: historyAvailableHeight,
+          Flexible(
+            child: SingleChildScrollView(
+              child: SimpleMovesHistory(
+                movesSans: movesSans,
+                fontSize: fontSize,
+                width: historyAvailableWidth,
+                height: historyAvailableHeight,
+              ),
+            ),
           ),
           if (!busyGeneratingGif)
             Padding(
@@ -514,12 +518,12 @@ class LandscapeContent extends StatelessWidget {
           ? constraints.maxWidth
           : constraints.maxHeight;
       final fontSize = minSize * 0.05;
-      final boardSize = minSize * 1.0;
+      final boardSize = minSize * 0.95;
       final gapSize = fontSize * 0.4;
-      const buttonSize = 10;
+      final controlsZone = busyGeneratingGif ? 0 : 100 + 4 * gapSize;
       final historyAvailableWidth = constraints.maxWidth - gapSize - boardSize;
       final historyAvailableHeight =
-          constraints.maxHeight - gapSize - buttonSize;
+          constraints.maxHeight - gapSize - controlsZone;
 
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
