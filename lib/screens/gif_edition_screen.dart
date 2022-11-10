@@ -212,6 +212,7 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
         'gameStepsCount': movesSans.length,
         'tempStorageDirPath': tempStorageDirPath,
         'baseFilename': baseFilename,
+        'imageDurationMs': _framerateMs,
       });
       setState(() {
         _isBusyGeneratingGif = false;
@@ -679,7 +680,8 @@ void _mergeScreenshotsIntoGif(Map<String, dynamic> parameters) async {
         '${parameters['tempStorageDirPath']}${Platform.pathSeparator}${parameters['baseFilename']}_$stepIndex.png');
     final currentImageBytes = await currentFile.readAsBytes();
     final currentImage = imageDecoder.decodeImage(currentImageBytes)!;
-    outputGif.addFrame(currentImage, duration: 100);
+    outputGif.addFrame(currentImage,
+        duration: parameters['imageDurationMs'] ~/ 10);
   }
   final gifData = outputGif.encodeAnimation(animation);
   final destinationFile = File(
