@@ -34,3 +34,13 @@ Download some images from [Lucide](https://lucide.dev) :
 8. Run `appimage-builder --recipe AppImageBuilder.yml`
 
 Your AppImage should have been generated in the root of the project, so you can close the running Docker container (run `exit`).
+
+### Zipping necessary files for Windows
+
+1. Build application in release mode.
+2. Copy the the content of the folder build\windows\runner\Release (all the dll and the data folder) in an empty  folder of your choice (we'll be zipping it later)
+3. Copy the following dll, from the folder C:\Windows\System32, into the previous folder
+    * msvcp140.dll
+    * vcruntime140.dll
+    * vcruntime140_1.dll
+4. You can the zip the folder and distribute.
