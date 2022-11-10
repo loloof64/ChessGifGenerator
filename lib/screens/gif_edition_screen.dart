@@ -608,6 +608,7 @@ class LandscapeContent extends StatelessWidget {
 
 void _mergeScreenshotsIntoGif(Map<String, dynamic> parameters) async {
   final animation = image.Animation();
+  final outputGif = image.GifEncoder();
   final imageDecoder = image.PngDecoder();
   for (var stepIndex = 0;
       stepIndex <= parameters['gameStepsCount'];
@@ -616,13 +617,9 @@ void _mergeScreenshotsIntoGif(Map<String, dynamic> parameters) async {
         '${parameters['tempStorageDirPath']}${Platform.pathSeparator}${parameters['baseFilename']}_$stepIndex.png');
     final currentImageBytes = await currentFile.readAsBytes();
     final currentImage = imageDecoder.decodeImage(currentImageBytes)!;
-    for (var frameRepetitionIndex = 0;
-        frameRepetitionIndex < 10;
-        frameRepetitionIndex++) {
-      animation.addFrame(currentImage);
-    }
+    outputGif.addFrame(currentImage, duration: 100);
   }
-  final gifData = image.encodeGifAnimation(animation);
+  final gifData = outputGif.encodeAnimation(animation);
   final destinationFile = File(
       '${parameters['tempStorageDirPath']}${Platform.pathSeparator}${parameters['baseFilename']}.gif');
   await destinationFile.writeAsBytes(gifData!);
