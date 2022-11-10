@@ -9,8 +9,9 @@
     "pages_gif_edition_failed_generating_gif_error": "Echec de génération du GIF.",
     "pages_gif_edition_success_generating_gif": "GIF généré.",
     "pages_gif_edition_select_save_file": "Choisissez le fichier de sauvegarde",
-    "pages_gif_edition_include_arrows": "Inclure les flèches",
-    "pages_gif_edition_include_coordinates": "Inclure les coordonnées",
+    "pages_gif_edition_include_arrows": "Flèches",
+    "pages_gif_edition_include_coordinates": "Coordonnées",
+    "pages_gif_edition_framerate": "Durée images (ms)",
 
     "game_selector_title": "Sélectionnez la partie",
     "no_move_in_selected_game": "Aucun coup dans la partie sélectionnée.",

@@ -38,6 +38,7 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
   bool _isBusyGeneratingGif = false;
   bool _includeArrows = true;
   bool _includeCoordinates = true;
+  double _framerateMs = 1000;
 
   @override
   void initState() {
@@ -280,6 +281,12 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
     });
   }
 
+  void _onFramerateChanged(double newValue) {
+    setState(() {
+      _framerateMs = newValue;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final isPortrait = MediaQuery.of(context).size.width < 800;
@@ -302,11 +309,13 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
                   blackPlayerType: _blackPlayerType,
                   includeArrows: _includeArrows,
                   includeCoordinates: _includeCoordinates,
+                  framerateMs: _framerateMs,
                   onMove: _checkMove,
                   onPromotion: _checkPromotion,
                   onGenerateGif: _onGenerateGif,
                   onIncludeArrowsChanged: _onIncludeArrowsChanged,
                   onIncludeCoordinatesChanged: _onIncludeCoordinatesChanged,
+                  onFramerateChanged: _onFramerateChanged,
                 )
               : LandscapeContent(
                   busyGeneratingGif: _isBusyGeneratingGif,
@@ -318,11 +327,13 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
                   blackPlayerType: _blackPlayerType,
                   includeArrows: _includeArrows,
                   includeCoordinates: _includeCoordinates,
+                  framerateMs: _framerateMs,
                   onMove: _checkMove,
                   onPromotion: _checkPromotion,
                   onGenerateGif: _onGenerateGif,
                   onIncludeArrowsChanged: _onIncludeArrowsChanged,
                   onIncludeCoordinatesChanged: _onIncludeCoordinatesChanged,
+                  onFramerateChanged: _onFramerateChanged,
                 ),
           if (_isBusyGeneratingGif)
             Center(
@@ -355,12 +366,14 @@ class PortraitContent extends StatelessWidget {
   final ScreenshotController screenshotController;
   final PlayerType whitePlayerType;
   final PlayerType blackPlayerType;
+  final double framerateMs;
 
   final void Function({required ShortMove move}) onMove;
   final Future<PieceType?> Function() onPromotion;
   final void Function() onGenerateGif;
   final void Function(bool?) onIncludeCoordinatesChanged;
   final void Function(bool?) onIncludeArrowsChanged;
+  final void Function(double) onFramerateChanged;
 
   const PortraitContent({
     super.key,
@@ -373,11 +386,13 @@ class PortraitContent extends StatelessWidget {
     required this.screenshotController,
     required this.whitePlayerType,
     required this.blackPlayerType,
+    required this.framerateMs,
     required this.onMove,
     required this.onPromotion,
     required this.onGenerateGif,
     required this.onIncludeArrowsChanged,
     required this.onIncludeCoordinatesChanged,
+    required this.onFramerateChanged,
   });
 
   @override
@@ -389,10 +404,10 @@ class PortraitContent extends StatelessWidget {
       final fontSize = minSize * 0.05;
       final boardSize = minSize * 0.60;
       final gapSize = fontSize * 0.1;
-      final controlsZone = busyGeneratingGif ? 0 : 100 + 4 * gapSize;
+      final controlsZone = busyGeneratingGif ? 0 : 100 + 6 * gapSize;
       final historyAvailableWidth = constraints.maxWidth;
       final historyAvailableHeight =
-          constraints.maxHeight - boardSize - gapSize * 2 - controlsZone;
+          constraints.maxHeight - boardSize - controlsZone;
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -418,7 +433,7 @@ class PortraitContent extends StatelessWidget {
           SizedBox(
             height: gapSize,
           ),
-          Flexible(
+          Expanded(
             child: SingleChildScrollView(
               child: SimpleMovesHistory(
                 movesSans: movesSans,
@@ -460,6 +475,24 @@ class PortraitContent extends StatelessWidget {
                 ],
               ),
             ),
+          if (!busyGeneratingGif)
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: gapSize),
+              child: Text(
+                AppLocalizations.of(context)!.pages_gif_edition_framerate,
+              ),
+            ),
+          if (!busyGeneratingGif)
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: gapSize),
+              child: Slider(
+                value: framerateMs,
+                onChanged: onFramerateChanged,
+                min: 500,
+                max: 1500,
+              ),
+            ),
+          if (!busyGeneratingGif) Text(framerateMs.toStringAsFixed(0)),
           SizedBox(
             height: gapSize,
           ),
@@ -486,12 +519,14 @@ class LandscapeContent extends StatelessWidget {
   final ScreenshotController screenshotController;
   final PlayerType whitePlayerType;
   final PlayerType blackPlayerType;
+  final double framerateMs;
 
   final void Function({required ShortMove move}) onMove;
   final Future<PieceType?> Function() onPromotion;
   final void Function() onGenerateGif;
   final void Function(bool?) onIncludeCoordinatesChanged;
   final void Function(bool?) onIncludeArrowsChanged;
+  final void Function(double) onFramerateChanged;
 
   const LandscapeContent({
     super.key,
@@ -504,11 +539,13 @@ class LandscapeContent extends StatelessWidget {
     required this.screenshotController,
     required this.whitePlayerType,
     required this.blackPlayerType,
+    required this.framerateMs,
     required this.onMove,
     required this.onPromotion,
     required this.onGenerateGif,
     required this.onIncludeArrowsChanged,
     required this.onIncludeCoordinatesChanged,
+    required this.onFramerateChanged,
   });
 
   @override
@@ -517,13 +554,15 @@ class LandscapeContent extends StatelessWidget {
       final minSize = constraints.maxWidth < constraints.maxHeight
           ? constraints.maxWidth
           : constraints.maxHeight;
+      final maxSize = constraints.maxWidth > constraints.maxHeight
+          ? constraints.maxWidth
+          : constraints.maxHeight;
       final fontSize = minSize * 0.05;
-      final boardSize = minSize * 0.95;
-      final gapSize = fontSize * 0.4;
-      final controlsZone = busyGeneratingGif ? 0 : 100 + 4 * gapSize;
+      final boardSize = maxSize * 0.50;
+      final gapSize = fontSize * 0.1;
+      final controlsZone = busyGeneratingGif ? 0 : 100 + 6 * gapSize;
       final historyAvailableWidth = constraints.maxWidth - gapSize - boardSize;
-      final historyAvailableHeight =
-          constraints.maxHeight - gapSize - controlsZone;
+      final historyAvailableHeight = constraints.maxHeight - controlsZone;
 
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -591,6 +630,25 @@ class LandscapeContent extends StatelessWidget {
                         AppLocalizations.of(context)!
                             .pages_gif_edition_include_arrows,
                       )
+                    ],
+                  ),
+                ),
+              if (!busyGeneratingGif)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: gapSize),
+                  child: Row(
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!
+                            .pages_gif_edition_framerate,
+                      ),
+                      Slider(
+                        value: framerateMs,
+                        onChanged: onFramerateChanged,
+                        min: 500,
+                        max: 1500,
+                      ),
+                      Text(framerateMs.toStringAsFixed(0)),
                     ],
                   ),
                 ),

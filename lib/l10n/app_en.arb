@@ -9,8 +9,9 @@
     "pages_gif_edition_failed_generating_gif_error": "Failed to generate GIF.",
     "pages_gif_edition_success_generating_gif": "GIF generated.",
     "pages_gif_edition_select_save_file": "Select the save file",
-    "pages_gif_edition_include_arrows": "Include arrows",
-    "pages_gif_edition_include_coordinates": "Include coordinates",
+    "pages_gif_edition_include_arrows": "Arrows",
+    "pages_gif_edition_include_coordinates": "Coordinates",
+    "pages_gif_edition_framerate": "Images duration (ms)",
 
     "game_selector_title": "Select the game",
     "no_move_in_selected_game": "No move in selected game.",
