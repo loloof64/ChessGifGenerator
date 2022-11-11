@@ -12,6 +12,7 @@
     "pages_gif_edition_include_arrows": "Flèches",
     "pages_gif_edition_include_coordinates": "Coordonnées",
     "pages_gif_edition_framerate": "Durée images (ms)",
+    "pages_gif_edition_error_taking_screenshot": "Erreur de sauvegarde de l'échiquier en image.",
 
     "game_selector_title": "Sélectionnez la partie",
     "no_move_in_selected_game": "Aucun coup dans la partie sélectionnée.",

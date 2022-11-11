@@ -12,6 +12,7 @@
     "pages_gif_edition_include_arrows": "Flechas",
     "pages_gif_edition_include_coordinates": "Coordenadas",
     "pages_gif_edition_framerate": "Duración imágenes (ms)",
+    "pages_gif_edition_error_taking_screenshot": "Error al guardar el tablero en la imagen.",
 
     "game_selector_title": "Selecciona el juego",
     "no_move_in_selected_game": "Sin movimiento en el juego seleccionado.",

@@ -12,6 +12,7 @@
     "pages_gif_edition_include_arrows": "Arrows",
     "pages_gif_edition_include_coordinates": "Coordinates",
     "pages_gif_edition_framerate": "Images duration (ms)",
+    "pages_gif_edition_error_taking_screenshot": "Error saving board into image.", 
 
     "game_selector_title": "Select the game",
     "no_move_in_selected_game": "No move in selected game.",

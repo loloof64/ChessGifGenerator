@@ -11,7 +11,8 @@ import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:chess/chess.dart' as chess;
-import 'package:image/image.dart' as image;
+import 'package:image/image.dart' as image_lib;
+import 'package:path/path.dart' as p;
 
 import '../components/simple_moves_history.dart';
 import '../logic/utils.dart';
@@ -39,6 +40,7 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
   bool _includeArrows = true;
   bool _includeCoordinates = true;
   double _framerateMs = 1000;
+  int _targetSizePx = 300;
 
   @override
   void initState() {
@@ -176,7 +178,7 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
 
   void _onGenerateGif() async {
     final movesSans = _gameLogic.getHistory();
-    final baseFilename = '${DateTime.now().millisecondsSinceEpoch}';
+    const baseFilename = 'screenshot';
     setState(() {
       _isBusyGeneratingGif = true;
       _gameLogic = chess.Chess();
@@ -188,12 +190,10 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
     Directory screenshotsDir =
         Directory('${tempDir.path}${Platform.pathSeparator}chess_screenshots');
     await screenshotsDir.create();
-    await screenshotController.captureAndSave(screenshotsDir.path,
-        fileName: '${baseFilename}_0.png');
 
     Future.delayed(const Duration(milliseconds: 100), () {
       _takeGameStepScreenshot(
-        stepIndex: 0,
+        stepIndex: -1,
         tempStorageDirPath: screenshotsDir.path,
         baseFilename: baseFilename,
         movesSans: movesSans,
@@ -207,6 +207,10 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
     required String baseFilename,
     required List<dynamic> movesSans,
   }) async {
+    /////////////////////////////
+    print('step: $stepIndex');
+    /////////////////////////////
+
     if (stepIndex >= movesSans.length) {
       await compute(_mergeScreenshotsIntoGif, {
         'gameStepsCount': movesSans.length,
@@ -246,19 +250,52 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
 
       return;
     }
+
     final fileName = '${baseFilename}_${stepIndex + 1}.png';
-    final currentMoveSan = movesSans[stepIndex];
-    setState(() {
-      _gameLogic.move(currentMoveSan);
+    if (stepIndex > -1) {
+      final currentMoveSan = movesSans[stepIndex];
+      setState(() {
+        _gameLogic.move(currentMoveSan);
+      });
       final lastMove = _gameLogic.getHistory({'verbose': true}).last;
-      _lastMoveToHighlight = BoardArrow(
-          from: lastMove['from'], to: lastMove['to'], color: Colors.blueAccent);
-    });
+      setState(() {
+        _lastMoveToHighlight = BoardArrow(
+            from: lastMove['from'],
+            to: lastMove['to'],
+            color: Colors.blueAccent);
+      });
+    }
     Future.delayed(const Duration(milliseconds: 100), () async {
-      await screenshotController.captureAndSave(
-        tempStorageDirPath,
-        fileName: fileName,
-      );
+      var imageData = await screenshotController.capture(
+          delay: const Duration(milliseconds: 100));
+      if (imageData == null) {
+        if (!mounted) return;
+        final snackBar = SnackBar(
+          content: Text(AppLocalizations.of(context)!
+              .pages_gif_edition_error_taking_screenshot),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        return;
+      }
+
+      var image = image_lib.decodeImage(imageData);
+      if (image == null) {
+        if (!mounted) return;
+        final snackBar = SnackBar(
+          content: Text(AppLocalizations.of(context)!
+              .pages_gif_edition_error_taking_screenshot),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        return;
+      }
+
+      var resizedImage = image_lib.copyResize(image,
+          width: _targetSizePx, height: _targetSizePx);
+      var resizedImageBytes = image_lib.encodePng(resizedImage);
+
+      File(p.join(tempStorageDirPath, fileName))
+          .writeAsBytes(resizedImageBytes);
+
       _takeGameStepScreenshot(
         stepIndex: stepIndex + 1,
         tempStorageDirPath: tempStorageDirPath,
@@ -670,9 +707,9 @@ class LandscapeContent extends StatelessWidget {
 }
 
 void _mergeScreenshotsIntoGif(Map<String, dynamic> parameters) async {
-  final animation = image.Animation();
-  final outputGif = image.GifEncoder();
-  final imageDecoder = image.PngDecoder();
+  final animation = image_lib.Animation();
+  final outputGif = image_lib.GifEncoder();
+  final imageDecoder = image_lib.PngDecoder();
   for (var stepIndex = 0;
       stepIndex <= parameters['gameStepsCount'];
       stepIndex++) {
