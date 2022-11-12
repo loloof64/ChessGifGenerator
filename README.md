@@ -37,7 +37,7 @@ Your AppImage should have been generated in the root of the project, so you can 
 
 ### Zipping necessary files for Windows
 
-1. Build application in release mode.
+1. Build application in release mode. (`flutter build windows`)
 2. Copy the the content of the folder build\windows\runner\Release (all the dll and the data folder) in an empty  folder of your choice (we'll be zipping it later)
 3. Copy the following dll, from the folder C:\Windows\System32, into the previous folder
     * msvcp140.dll
