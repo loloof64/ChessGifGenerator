@@ -370,92 +370,94 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
       drawer: Container(
         key: _drawerKey,
         color: Colors.white,
-        child: Center(
-          child: _isBusyGeneratingGif
-              ? Text(AppLocalizations.of(context)!
-                  .pages_gif_edition_no_option_while_generating)
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(
-                        AppLocalizations.of(context)!.buttons_go_back,
+        child: SingleChildScrollView(
+          child: Center(
+            child: _isBusyGeneratingGif
+                ? Text(AppLocalizations.of(context)!
+                    .pages_gif_edition_no_option_while_generating)
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(
+                          AppLocalizations.of(context)!.buttons_go_back,
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: Row(
-                        children: [
-                          Checkbox(
-                            value: _includeCoordinates,
-                            onChanged: _onIncludeCoordinatesChanged,
-                          ),
-                          Text(
-                            AppLocalizations.of(context)!
-                                .pages_gif_edition_include_coordinates,
-                          )
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Row(
+                          children: [
+                            Checkbox(
+                              value: _includeCoordinates,
+                              onChanged: _onIncludeCoordinatesChanged,
+                            ),
+                            Text(
+                              AppLocalizations.of(context)!
+                                  .pages_gif_edition_include_coordinates,
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: Row(
-                        children: [
-                          Checkbox(
-                            value: _includeArrows,
-                            onChanged: _onIncludeArrowsChanged,
-                          ),
-                          Text(
-                            AppLocalizations.of(context)!
-                                .pages_gif_edition_include_arrows,
-                          )
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Row(
+                          children: [
+                            Checkbox(
+                              value: _includeArrows,
+                              onChanged: _onIncludeArrowsChanged,
+                            ),
+                            Text(
+                              AppLocalizations.of(context)!
+                                  .pages_gif_edition_include_arrows,
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: Text(
-                        AppLocalizations.of(context)!
-                            .pages_gif_edition_framerate,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Text(
+                          AppLocalizations.of(context)!
+                              .pages_gif_edition_framerate,
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: Slider(
-                        value: _framerateMs,
-                        onChanged: _onFramerateChanged,
-                        min: 500,
-                        max: 1500,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Slider(
+                          value: _framerateMs,
+                          onChanged: _onFramerateChanged,
+                          min: 500,
+                          max: 1500,
+                        ),
                       ),
-                    ),
-                    Text(_framerateMs.toStringAsFixed(0)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: Text(
-                        AppLocalizations.of(context)!
-                            .pages_gif_edition_target_size,
+                      Text(_framerateMs.toStringAsFixed(0)),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Text(
+                          AppLocalizations.of(context)!
+                              .pages_gif_edition_target_size,
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: TextField(
-                        keyboardType: const TextInputType.numberWithOptions(),
-                        controller: _sizeTextController,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: TextField(
+                          keyboardType: const TextInputType.numberWithOptions(),
+                          controller: _sizeTextController,
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: ElevatedButton(
-                        onPressed: () =>
-                            _onSizeUpdated(int.parse(_sizeTextController.text)),
-                        child:
-                            Text(AppLocalizations.of(context)!.buttons_update),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: ElevatedButton(
+                          onPressed: () => _onSizeUpdated(
+                              int.parse(_sizeTextController.text)),
+                          child: Text(
+                              AppLocalizations.of(context)!.buttons_update),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+          ),
         ),
       ),
       body: Stack(

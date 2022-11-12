@@ -10,7 +10,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     setWindowTitle('Chess animated gif creator');
-    setWindowMinSize(const Size(400, 300));
+    setWindowMinSize(const Size(400, 350));
     setWindowMaxSize(Size.infinite);
   }
 
