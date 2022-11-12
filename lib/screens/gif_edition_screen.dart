@@ -230,17 +230,17 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
         final originalFile = File(
             '$tempStorageDirPath${Platform.pathSeparator}$baseFilename.gif');
         await originalFile.copy(targetFilePath);
+
+        final tempDirectory = File(tempStorageDirPath);
+        tempDirectory.delete(recursive: true);
+
+        if (!mounted) return;
+        final doneSnackbar = SnackBar(
+          content: Text(AppLocalizations.of(context)!
+              .pages_gif_edition_success_generating_gif),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(doneSnackbar);
       }
-
-      final tempDirectory = File(tempStorageDirPath);
-      tempDirectory.delete(recursive: true);
-
-      if (!mounted) return;
-      final doneSnackbar = SnackBar(
-        content: Text(AppLocalizations.of(context)!
-            .pages_gif_edition_success_generating_gif),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(doneSnackbar);
 
       setState(() {
         _whitePlayerType = PlayerType.human;
