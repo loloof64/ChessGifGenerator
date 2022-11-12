@@ -42,6 +42,7 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
   double _framerateMs = 1000;
   int _targetSizePx = 300;
   final TextEditingController _sizeTextController = TextEditingController();
+  final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
   @override
   void initState() {
@@ -337,8 +338,37 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
         title: Text(
           AppLocalizations.of(context)!.pages_gif_edition_title,
         ),
+        leading: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: Builder(
+                builder: ((context) => InkWell(
+                      onTap: () {
+                        Scaffold.of(context).openDrawer();
+                      },
+                      child: const Icon(
+                        Icons.menu,
+                        color: Colors.white,
+                      ),
+                    )),
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: const Icon(
+                Icons.arrow_back_sharp,
+                color: Colors.white,
+              ),
+            )
+          ],
+        ),
       ),
       drawer: Container(
+        key: _drawerKey,
         color: Colors.white,
         child: Center(
           child: _isBusyGeneratingGif
