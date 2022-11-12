@@ -13,10 +13,15 @@
     "pages_gif_edition_include_coordinates": "Coordonnées",
     "pages_gif_edition_framerate": "Durée images (ms)",
     "pages_gif_edition_error_taking_screenshot": "Erreur de sauvegarde de l'échiquier en image.",
+    "pages_gif_edition_target_size": "Taille (px)",
+    "pages_gif_edition_no_option_while_generating": "Aucune option disponible pendant la génération d'image !",
+    "pages_gif_edition_options_drawer_title": "Options",
 
     "game_selector_title": "Sélectionnez la partie",
     "no_move_in_selected_game": "Aucun coup dans la partie sélectionnée.",
 
     "buttons_cancel": "Annuler",
-    "buttons_ok": "D'accord"
+    "buttons_ok": "D'accord",
+    "buttons_update": "MAJ",
+    "buttons_go_back": "Revenir"
 }

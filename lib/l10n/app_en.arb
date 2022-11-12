@@ -12,11 +12,16 @@
     "pages_gif_edition_include_arrows": "Arrows",
     "pages_gif_edition_include_coordinates": "Coordinates",
     "pages_gif_edition_framerate": "Images duration (ms)",
-    "pages_gif_edition_error_taking_screenshot": "Error saving board into image.", 
+    "pages_gif_edition_error_taking_screenshot": "Error saving board into image.",
+    "pages_gif_edition_target_size": "Size (px)",
+    "pages_gif_edition_no_option_while_generating": "No option available while generating image !",
+    "pages_gif_edition_options_drawer_title": "Options",
 
     "game_selector_title": "Select the game",
     "no_move_in_selected_game": "No move in selected game.",
 
     "buttons_cancel": "Cancel",
-    "buttons_ok": "Ok"
+    "buttons_ok": "Ok",
+    "buttons_update": "Update",
+    "buttons_go_back": "Back"
 }

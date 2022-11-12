@@ -13,10 +13,15 @@
     "pages_gif_edition_include_coordinates": "Coordenadas",
     "pages_gif_edition_framerate": "Duración imágenes (ms)",
     "pages_gif_edition_error_taking_screenshot": "Error al guardar el tablero en la imagen.",
+    "pages_gif_edition_target_size": "Talla (px)",
+    "pages_gif_edition_no_option_while_generating": "¡No hay opción disponible al generar la imagen!",
+    "pages_gif_edition_options_drawer_title": "Opciones",
 
     "game_selector_title": "Selecciona el juego",
     "no_move_in_selected_game": "Sin movimiento en el juego seleccionado.",
 
     "buttons_cancel": "Anular",
-    "buttons_ok": "De acuerdo"
+    "buttons_ok": "De acuerdo",
+    "buttons_update": "Actualizar",
+    "buttons_go_back": "Volver"
 }

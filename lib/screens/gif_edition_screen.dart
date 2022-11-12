@@ -41,9 +41,11 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
   bool _includeCoordinates = true;
   double _framerateMs = 1000;
   int _targetSizePx = 300;
+  final TextEditingController _sizeTextController = TextEditingController();
 
   @override
   void initState() {
+    _sizeTextController.text = _targetSizePx.toString();
     if (widget.game != null) {
       var gameData = widget.game['moves']['pgn'];
       var moveIndex = 0;
@@ -207,10 +209,6 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
     required String baseFilename,
     required List<dynamic> movesSans,
   }) async {
-    /////////////////////////////
-    print('step: $stepIndex');
-    /////////////////////////////
-
     if (stepIndex >= movesSans.length) {
       await compute(_mergeScreenshotsIntoGif, {
         'gameStepsCount': movesSans.length,
@@ -325,6 +323,12 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
     });
   }
 
+  void _onSizeUpdated(int newValue) {
+    setState(() {
+      _targetSizePx = newValue;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final isPortrait = MediaQuery.of(context).size.width < 800;
@@ -334,6 +338,96 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
           AppLocalizations.of(context)!.pages_gif_edition_title,
         ),
       ),
+      drawer: Container(
+        color: Colors.white,
+        child: Center(
+          child: _isBusyGeneratingGif
+              ? Text(AppLocalizations.of(context)!
+                  .pages_gif_edition_no_option_while_generating)
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        AppLocalizations.of(context)!.buttons_go_back,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Row(
+                        children: [
+                          Checkbox(
+                            value: _includeCoordinates,
+                            onChanged: _onIncludeCoordinatesChanged,
+                          ),
+                          Text(
+                            AppLocalizations.of(context)!
+                                .pages_gif_edition_include_coordinates,
+                          )
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Row(
+                        children: [
+                          Checkbox(
+                            value: _includeArrows,
+                            onChanged: _onIncludeArrowsChanged,
+                          ),
+                          Text(
+                            AppLocalizations.of(context)!
+                                .pages_gif_edition_include_arrows,
+                          )
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Text(
+                        AppLocalizations.of(context)!
+                            .pages_gif_edition_framerate,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Slider(
+                        value: _framerateMs,
+                        onChanged: _onFramerateChanged,
+                        min: 500,
+                        max: 1500,
+                      ),
+                    ),
+                    Text(_framerateMs.toStringAsFixed(0)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Text(
+                        AppLocalizations.of(context)!
+                            .pages_gif_edition_target_size,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: TextField(
+                        keyboardType: const TextInputType.numberWithOptions(),
+                        controller: _sizeTextController,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: ElevatedButton(
+                        onPressed: () =>
+                            _onSizeUpdated(int.parse(_sizeTextController.text)),
+                        child:
+                            Text(AppLocalizations.of(context)!.buttons_update),
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+      ),
       body: Stack(
         children: [
           isPortrait
@@ -341,37 +435,32 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
                   busyGeneratingGif: _isBusyGeneratingGif,
                   positionFen: _gameLogic.fen,
                   movesSans: _movesSans,
+                  targetSizePx: _targetSizePx,
                   lastMoveToHighlight: _lastMoveToHighlight,
                   screenshotController: screenshotController,
                   whitePlayerType: _whitePlayerType,
                   blackPlayerType: _blackPlayerType,
                   includeArrows: _includeArrows,
                   includeCoordinates: _includeCoordinates,
-                  framerateMs: _framerateMs,
+                  sizePx: _targetSizePx,
                   onMove: _checkMove,
                   onPromotion: _checkPromotion,
                   onGenerateGif: _onGenerateGif,
-                  onIncludeArrowsChanged: _onIncludeArrowsChanged,
-                  onIncludeCoordinatesChanged: _onIncludeCoordinatesChanged,
-                  onFramerateChanged: _onFramerateChanged,
                 )
               : LandscapeContent(
                   busyGeneratingGif: _isBusyGeneratingGif,
                   positionFen: _gameLogic.fen,
                   movesSans: _movesSans,
+                  targetSizePx: _targetSizePx,
                   lastMoveToHighlight: _lastMoveToHighlight,
                   screenshotController: screenshotController,
                   whitePlayerType: _whitePlayerType,
                   blackPlayerType: _blackPlayerType,
                   includeArrows: _includeArrows,
                   includeCoordinates: _includeCoordinates,
-                  framerateMs: _framerateMs,
                   onMove: _checkMove,
                   onPromotion: _checkPromotion,
                   onGenerateGif: _onGenerateGif,
-                  onIncludeArrowsChanged: _onIncludeArrowsChanged,
-                  onIncludeCoordinatesChanged: _onIncludeCoordinatesChanged,
-                  onFramerateChanged: _onFramerateChanged,
                 ),
           if (_isBusyGeneratingGif)
             Center(
@@ -398,152 +487,92 @@ class PortraitContent extends StatelessWidget {
   final bool busyGeneratingGif;
   final bool includeCoordinates;
   final bool includeArrows;
+  final int targetSizePx;
   final String positionFen;
   final List<String> movesSans;
   final BoardArrow? lastMoveToHighlight;
   final ScreenshotController screenshotController;
   final PlayerType whitePlayerType;
   final PlayerType blackPlayerType;
-  final double framerateMs;
 
   final void Function({required ShortMove move}) onMove;
   final Future<PieceType?> Function() onPromotion;
   final void Function() onGenerateGif;
-  final void Function(bool?) onIncludeCoordinatesChanged;
-  final void Function(bool?) onIncludeArrowsChanged;
-  final void Function(double) onFramerateChanged;
 
-  const PortraitContent({
+  final TextEditingController _sizeTextController = TextEditingController();
+
+  PortraitContent({
     super.key,
     required this.busyGeneratingGif,
     required this.includeArrows,
     required this.includeCoordinates,
+    required this.targetSizePx,
     required this.positionFen,
     required this.movesSans,
     required this.lastMoveToHighlight,
     required this.screenshotController,
     required this.whitePlayerType,
     required this.blackPlayerType,
-    required this.framerateMs,
     required this.onMove,
     required this.onPromotion,
     required this.onGenerateGif,
-    required this.onIncludeArrowsChanged,
-    required this.onIncludeCoordinatesChanged,
-    required this.onFramerateChanged,
-  });
+    required int sizePx,
+  }) {
+    _sizeTextController.text = sizePx.toString();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (ctx2, constraints) {
-      final minSize = constraints.maxWidth < constraints.maxHeight
-          ? constraints.maxWidth
-          : constraints.maxHeight;
-      final fontSize = minSize * 0.05;
-      final boardSize = minSize * 0.60;
-      final gapSize = fontSize * 0.1;
-      final controlsZone = busyGeneratingGif ? 0 : 100 + 6 * gapSize;
-      final historyAvailableWidth = constraints.maxWidth;
-      final historyAvailableHeight =
-          constraints.maxHeight - boardSize - controlsZone;
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: boardSize,
-            height: boardSize,
-            child: Screenshot(
-              controller: screenshotController,
-              child: SimpleChessBoard(
-                whitePlayerType: whitePlayerType,
-                blackPlayerType: blackPlayerType,
-                fen: positionFen,
-                onMove: onMove,
-                onPromote: onPromotion,
-                orientation: BoardColor.white,
-                engineThinking: false,
-                lastMoveToHighlight: includeArrows ? lastMoveToHighlight : null,
-                showCoordinatesZone: includeCoordinates,
-              ),
+    const gapSize = 10.0;
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          flex: 10,
+          child: Screenshot(
+            controller: screenshotController,
+            child: SimpleChessBoard(
+              whitePlayerType: whitePlayerType,
+              blackPlayerType: blackPlayerType,
+              fen: positionFen,
+              onMove: onMove,
+              onPromote: onPromotion,
+              orientation: BoardColor.white,
+              engineThinking: false,
+              lastMoveToHighlight: includeArrows ? lastMoveToHighlight : null,
+              showCoordinatesZone: includeCoordinates,
             ),
           ),
-          SizedBox(
-            height: gapSize,
-          ),
-          Expanded(
-            child: SingleChildScrollView(
+        ),
+        const SizedBox(
+          height: gapSize,
+        ),
+        Expanded(
+          flex: 6,
+          child: LayoutBuilder(builder: (ctx2, constraints2) {
+            return SingleChildScrollView(
               child: SimpleMovesHistory(
                 movesSans: movesSans,
-                fontSize: fontSize,
-                width: historyAvailableWidth,
-                height: historyAvailableHeight,
+                fontSize: constraints2.biggest.width * 0.1,
+                width: constraints2.biggest.width,
+                height: constraints2.biggest.height,
               ),
-            ),
-          ),
-          if (!busyGeneratingGif)
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: gapSize),
-              child: Row(
-                children: [
-                  Checkbox(
-                    value: includeCoordinates,
-                    onChanged: onIncludeCoordinatesChanged,
-                  ),
-                  Text(
-                    AppLocalizations.of(context)!
-                        .pages_gif_edition_include_coordinates,
-                  )
-                ],
-              ),
-            ),
-          if (!busyGeneratingGif)
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: gapSize),
-              child: Row(
-                children: [
-                  Checkbox(
-                    value: includeArrows,
-                    onChanged: onIncludeArrowsChanged,
-                  ),
-                  Text(
-                    AppLocalizations.of(context)!
-                        .pages_gif_edition_include_arrows,
-                  )
-                ],
-              ),
-            ),
-          if (!busyGeneratingGif)
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: gapSize),
-              child: Text(
-                AppLocalizations.of(context)!.pages_gif_edition_framerate,
-              ),
-            ),
-          if (!busyGeneratingGif)
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: gapSize),
-              child: Slider(
-                value: framerateMs,
-                onChanged: onFramerateChanged,
-                min: 500,
-                max: 1500,
-              ),
-            ),
-          if (!busyGeneratingGif) Text(framerateMs.toStringAsFixed(0)),
-          SizedBox(
-            height: gapSize,
-          ),
-          if (!busyGeneratingGif)
-            ElevatedButton(
+            );
+          }),
+        ),
+        if (!busyGeneratingGif)
+          Expanded(
+            flex: 1,
+            child: ElevatedButton(
               onPressed: onGenerateGif,
               child: Text(
                 AppLocalizations.of(context)!.pages_gif_edition_generate_button,
               ),
             ),
-        ],
-      );
-    });
+          ),
+      ],
+    );
   }
 }
 
@@ -551,39 +580,33 @@ class LandscapeContent extends StatelessWidget {
   final bool busyGeneratingGif;
   final bool includeCoordinates;
   final bool includeArrows;
+  final int targetSizePx;
   final String positionFen;
   final List<String> movesSans;
   final BoardArrow? lastMoveToHighlight;
   final ScreenshotController screenshotController;
   final PlayerType whitePlayerType;
   final PlayerType blackPlayerType;
-  final double framerateMs;
 
   final void Function({required ShortMove move}) onMove;
   final Future<PieceType?> Function() onPromotion;
   final void Function() onGenerateGif;
-  final void Function(bool?) onIncludeCoordinatesChanged;
-  final void Function(bool?) onIncludeArrowsChanged;
-  final void Function(double) onFramerateChanged;
 
   const LandscapeContent({
     super.key,
     required this.busyGeneratingGif,
     required this.includeArrows,
     required this.includeCoordinates,
+    required this.targetSizePx,
     required this.positionFen,
     required this.movesSans,
     required this.lastMoveToHighlight,
     required this.screenshotController,
     required this.whitePlayerType,
     required this.blackPlayerType,
-    required this.framerateMs,
     required this.onMove,
     required this.onPromotion,
     required this.onGenerateGif,
-    required this.onIncludeArrowsChanged,
-    required this.onIncludeCoordinatesChanged,
-    required this.onFramerateChanged,
   });
 
   @override
@@ -630,8 +653,8 @@ class LandscapeContent extends StatelessWidget {
           ),
           Column(
             children: [
-              SizedBox(
-                height: constraints.maxHeight * 0.7,
+              Expanded(
+                flex: 8,
                 child: SimpleMovesHistory(
                   width: historyAvailableWidth,
                   height: historyAvailableHeight,
@@ -640,62 +663,14 @@ class LandscapeContent extends StatelessWidget {
                 ),
               ),
               if (!busyGeneratingGif)
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: gapSize),
-                  child: Row(
-                    children: [
-                      Checkbox(
-                        value: includeCoordinates,
-                        onChanged: onIncludeCoordinatesChanged,
-                      ),
-                      Text(
-                        AppLocalizations.of(context)!
-                            .pages_gif_edition_include_coordinates,
-                      )
-                    ],
-                  ),
-                ),
-              if (!busyGeneratingGif)
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: gapSize),
-                  child: Row(
-                    children: [
-                      Checkbox(
-                        value: includeArrows,
-                        onChanged: onIncludeArrowsChanged,
-                      ),
-                      Text(
-                        AppLocalizations.of(context)!
-                            .pages_gif_edition_include_arrows,
-                      )
-                    ],
-                  ),
-                ),
-              if (!busyGeneratingGif)
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: gapSize),
-                  child: Row(
-                    children: [
-                      Text(
-                        AppLocalizations.of(context)!
-                            .pages_gif_edition_framerate,
-                      ),
-                      Slider(
-                        value: framerateMs,
-                        onChanged: onFramerateChanged,
-                        min: 500,
-                        max: 1500,
-                      ),
-                      Text(framerateMs.toStringAsFixed(0)),
-                    ],
-                  ),
-                ),
-              if (!busyGeneratingGif)
-                ElevatedButton(
-                  onPressed: onGenerateGif,
-                  child: Text(
-                    AppLocalizations.of(context)!
-                        .pages_gif_edition_generate_button,
+                Expanded(
+                  flex: 1,
+                  child: ElevatedButton(
+                    onPressed: onGenerateGif,
+                    child: Text(
+                      AppLocalizations.of(context)!
+                          .pages_gif_edition_generate_button,
+                    ),
                   ),
                 ),
             ],
