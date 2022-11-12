@@ -2,6 +2,11 @@
 
 Create an animated GIF from your chess game.
 
+* You can enter the moves manually, or use the main line of a game from PGN file
+* You can choose the overall time of the images in the animation file
+* You can choose the size in pixels of the image
+* You can choose to remove last move arrows and coordinates around the board
+
 ## Credits
 
 * Font freeSerif was downloaded from [Fonts2U](https://fr.fonts2u.com/download/free-serif.police).
