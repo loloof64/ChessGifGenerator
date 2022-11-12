@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class SimpleMovesHistory extends StatelessWidget {
-  final double width;
-  final double height;
+  final double? width;
+  final double? height;
   final double fontSize;
   final List<String> movesSans;
 
