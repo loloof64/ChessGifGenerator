@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:chess_animated_gif_creator/utils/pgn_parser/PGNInterpreter.dart';
 import 'package:flutter/material.dart';
 import 'package:chess/chess.dart' as chess;
 import 'package:simple_chess_board/simple_chess_board.dart';
@@ -14,7 +15,7 @@ class GameSelectorResult {
 }
 
 class GameSelectionScreen extends StatefulWidget {
-  final dynamic games;
+  final List<PgnGame> games;
 
   const GameSelectionScreen({
     super.key,
@@ -92,7 +93,7 @@ class _GameSelectionScreenState extends State<GameSelectionScreen> {
   }
 
   String currentFen() {
-    return (widget.games[_gameIndex]["tags"] ?? {})["FEN"] ?? chess.Chess().fen;
+    return widget.games[_gameIndex].headers["FEN"] ?? chess.Chess().fen;
   }
 
   bool whiteTurnInGameSelector() {

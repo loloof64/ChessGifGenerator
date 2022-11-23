@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:chess_animated_gif_creator/utils/pgn_parser/PGNInterpreter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -18,7 +19,7 @@ import '../components/simple_moves_history.dart';
 import '../logic/utils.dart';
 
 class GifEditionScreen extends StatefulWidget {
-  final dynamic game;
+  final PgnGame? game;
   const GifEditionScreen({
     super.key,
     this.game,
@@ -48,14 +49,13 @@ class _GifEditionScreenState extends State<GifEditionScreen> {
   void initState() {
     _sizeTextController.text = _targetSizePx.toString();
     if (widget.game != null) {
-      var gameData = widget.game['moves']['pgn'];
+      var gameData = widget.game!.moves;
       var moveIndex = 0;
       for (var node in gameData) {
         if (moveIndex % 2 == 0) {
           _movesSans.add('${(moveIndex / 2 + 1).round()}.');
         }
-        final currentData = node['halfMove'];
-        final currentSan = currentData['notation'];
+        final currentSan = node.moveSan;
         _gameLogic.move(currentSan);
         _movesSans.add(currentSan);
         final lastMove = _gameLogic.history.last;
