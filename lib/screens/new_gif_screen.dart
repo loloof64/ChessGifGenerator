@@ -81,6 +81,10 @@ class _NewGifScreenState extends State<NewGifScreen> {
         throw Exception(AppLocalizations.of(context)?.no_move_in_selected_game);
       }
 
+      setState(() {
+        _isLoading = false;
+      });
+
       if (!mounted) return;
       await Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => GifEditionScreen(game: game),
