@@ -11,7 +11,7 @@ AppDir:
     id: com.loloof64.chess-animated-gif-creator
     name: ChessAnimatedGifCreator
     icon: chess-animated-gif-creator
-    version: 0.2.0
+    version: 0.3.0
     exec: chess_animated_gif_creator
     exec_args: $@
   apt:

@@ -1,10 +1,12 @@
 import 'dart:io';
 
-import 'package:chess_animated_gif_creator/utils/pgn_parser/pgn_parser.dart';
+import 'package:antlr4/antlr4.dart';
+import 'package:chess_animated_gif_creator/utils/pgn_parser/PGNInterpreter.dart';
+import 'package:chess_animated_gif_creator/utils/pgn_parser/generated/PGNLexer.dart';
+import 'package:chess_animated_gif_creator/utils/pgn_parser/generated/PGNParser.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:petitparser/petitparser.dart';
 import 'package:chess/chess.dart' as chess;
 
 import '../screens/game_selection_screen.dart';
@@ -40,16 +42,18 @@ class _NewGifScreenState extends State<NewGifScreen> {
 
     final selectedFile = File(result.files.single.path!);
 
-    try {
-      final content = await selectedFile.readAsString();
-      final definition = PgnParserDefinition();
-      final parser = definition.build();
-      final parserResult = parser.parse(content);
+    final content = await selectedFile.readAsString();
+    final lexer = PGNLexer(InputStream.fromString(content));
+    final tokens = CommonTokenStream(lexer);
+    final parser = PGNParser(tokens);
+    final tree = parser.parse();
 
-      final tempValue = parserResult.value;
-      final allGames = tempValue is List && tempValue[0] is Failure<dynamic>
-          ? tempValue.last
-          : tempValue;
+    final walker = ParseTreeWalker();
+    final extractor = PgnInterpreter();
+    walker.walk(extractor, tree);
+
+    if (extractor.error == null) {
+      final allGames = extractor.games;
 
       if (!mounted) return;
       final gameData = await Navigator.of(context).push(
@@ -66,7 +70,7 @@ class _NewGifScreenState extends State<NewGifScreen> {
       }
 
       final game = allGames[gameData.gameIndex];
-      final fen = (game["tags"] ?? {})["FEN"] ?? chess.Chess().fen;
+      final fen = game.headers["FEN"] ?? chess.Chess().fen;
 
       final gameLogic = chess.Chess.fromFEN(fen);
       final moves = gameLogic.generate_moves();
@@ -77,11 +81,15 @@ class _NewGifScreenState extends State<NewGifScreen> {
         throw Exception(AppLocalizations.of(context)?.no_move_in_selected_game);
       }
 
+      setState(() {
+        _isLoading = false;
+      });
+
       if (!mounted) return;
       await Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => GifEditionScreen(game: game),
       ));
-    } catch (ex) {
+    } else {
       setState(() {
         _isLoading = false;
       });
